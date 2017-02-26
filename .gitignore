@@ -1,0 +1,9 @@
+*.DS_Store
+*.class
+*.jar
+*.war
+.gradle
+build/
+!gradle-wrapper.jar
+.idea
+
