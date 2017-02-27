@@ -8,6 +8,7 @@ import com.datastax.driver.core.Session;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 public class ClusterSmokeTest {
@@ -21,7 +22,7 @@ public class ClusterSmokeTest {
       ResultSet rs = session.execute("select release_version from system.local");
       Row row = rs.one();
 
-      assertThat(row.getString("release_version"), is("3.10"));
+      assertThat(row.getString("release_version"), startsWith("3."));
     }
   }
 }
