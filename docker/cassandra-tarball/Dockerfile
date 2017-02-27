@@ -10,12 +10,10 @@ RUN wget http://apache.cp.if.ua/cassandra/3.10/apache-cassandra-3.10-bin.tar.gz 
 	&& rm -rf apache-cassandra-3.10
 
 ENV CASSANDRA_DIR=/usr/lib/cassandra-3.10
-ENV CASSANDRA_BIN=$CASSANDRA_DIR/bin 
-
-ENV PATH "$PATH:$CASSANDRA_BIN"
+ENV PATH "$PATH:$CASSANDRA_DIR/bin"
 
 EXPOSE 9042
 
 ADD entrypoint.sh /usr/lib/cassandra-3.10/bin/entrypoint.sh
 
-ENTRYPOINT entrypoint.sh $CASSANDRA_DIR
+ENTRYPOINT ["entrypoint.sh"]
