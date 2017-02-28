@@ -3,17 +3,20 @@
 FROM dmitry404/oracle-java8
 LABEL maintainer dmity404@gmail.com
 
-RUN wget http://apache.cp.if.ua/cassandra/3.10/apache-cassandra-3.10-bin.tar.gz \
-	&& tar xzf apache-cassandra-3.10-bin.tar.gz \
-	&& rm -f apache-cassandra-3.10-bin.tar.gz \
-	&& cp -r apache-cassandra-3.10 /usr/lib/cassandra-3.10 \
-	&& rm -rf apache-cassandra-3.10
+RUN wget http://mirrors.ae-online.de/apache/cassandra/3.9/apache-cassandra-3.9-bin.tar.gz \
+	&& tar xzf apache-cassandra-3.9-bin.tar.gz \
+	&& rm -f apache-cassandra-3.9-bin.tar.gz \
+	&& cp -r apache-cassandra-3.9 /usr/lib/cassandra \
+	&& rm -rf apache-cassandra-3.9
 
-ENV CASSANDRA_DIR=/usr/lib/cassandra-3.10
+RUN wget http://central.maven.org/maven2/com/stratio/cassandra/cassandra-lucene-index-plugin/3.9.0-RELEASE/cassandra-lucene-index-plugin-3.9.0-RELEASE.jar \
+	&& mv cassandra-lucene-index-plugin-3.9.0-RELEASE.jar /usr/lib/cassandra/lib
+
+ENV CASSANDRA_DIR=/usr/lib/cassandra
 ENV PATH "$PATH:$CASSANDRA_DIR/bin"
 
 EXPOSE 9042
 
-ADD entrypoint.sh /usr/lib/cassandra-3.10/bin/entrypoint.sh
+ADD entrypoint.sh /usr/lib/cassandra/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
