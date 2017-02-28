@@ -12,6 +12,9 @@ RUN wget http://mirrors.ae-online.de/apache/cassandra/3.9/apache-cassandra-3.9-b
 RUN wget http://central.maven.org/maven2/com/stratio/cassandra/cassandra-lucene-index-plugin/3.9.0-RELEASE/cassandra-lucene-index-plugin-3.9.0-RELEASE.jar \
 	&& mv cassandra-lucene-index-plugin-3.9.0-RELEASE.jar /usr/lib/cassandra/lib
 
+# cqlsh requires python 2.7
+RUN apt-get update && apt-get install -y --no-install-recommends python2.7 && rm -rf /var/lib/apt/lists/*
+
 ENV CASSANDRA_DIR=/usr/lib/cassandra
 ENV PATH "$PATH:$CASSANDRA_DIR/bin"
 
