@@ -1,4 +1,4 @@
-package bdata.week1;
+package week1.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
