@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "\nConfiguring Cassandra...\n"
+echo "Configuring Cassandra..."
 
 CASSANDRA_CONFIG=$CASSANDRA_DIR/conf
 HOSTNAME_ADDR="$(hostname --ip-address)"
@@ -19,6 +19,6 @@ sed -ri 's/(- seeds:).*/\1 "'"$SEED_ADDR"'"/' "$CASSANDRA_CONFIG/cassandra.yaml"
 
 sed -ri 's/^(# )?('rpc_address':).*/\2 '0.0.0.0'/' "$CASSANDRA_CONFIG/cassandra.yaml"
 
-echo "\nStarting Cassandra...\n"
+echo "Starting Cassandra..."
 # I promise not to run it as root in production 
 cassandra -Rf
