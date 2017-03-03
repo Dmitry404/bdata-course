@@ -14,7 +14,7 @@ class DbLoader {
   public void populateDb() {
     while (tweetsSupplier.hasMoreTweets()) {
 
-      TweetsSupplier.Tweet tweet = tweetsSupplier.getTweet().orElse(null);
+      TweetsSupplier.Tweet tweet = tweetsSupplier.getTweet();
       if (tweet == null) {
         return;
       }

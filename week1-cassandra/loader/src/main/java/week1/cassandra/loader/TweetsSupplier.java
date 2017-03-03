@@ -1,62 +1,71 @@
 package week1.cassandra.loader;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Optional;
-import java.util.zip.GZIPInputStream;
 
 public class TweetsSupplier {
   private BufferedReader bufferedReader = null;
 
-  public TweetsSupplier(String csvFile) {
+  public TweetsSupplier(InputStream inputStream) {
     try {
-      InputStream fileInputStream = new FileInputStream(csvFile);
-      //InputStream gzInputStream = new GZIPInputStream(fileInputStream);
-      Reader reader = new InputStreamReader(fileInputStream, "UTF-8");
-
+      Reader reader = new InputStreamReader(inputStream, "UTF-8");
       bufferedReader = new BufferedReader(reader);
 
       skipHeader();
     } catch (IOException e) {
-      e.printStackTrace();
-      // make a safe point here, e.g. setting things to safe values
+      drawnSupplier();
     }
+  }
+
+  private void drawnSupplier() {
+    if (bufferedReader != null) {
+      try {
+        bufferedReader.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    bufferedReader = null;
+  }
+
+  private boolean isDrown() {
+    return bufferedReader == null;
+  }
+
+  public boolean hasMoreTweets() {
+    return !isDrown();
   }
 
   private String skipHeader() throws IOException {
     return bufferedReader.readLine();
   }
 
-  public Optional<Tweet> getTweet() {
-    if (bufferedReader == null) {
-      return Optional.empty();
+  public Tweet getTweet() {
+    if (isDrown()) {
+      return null;
     }
     try {
-      String line = bufferedReader.readLine();
-      if (line == null) {
-        bufferedReader.close();
-        bufferedReader = null;
-        return Optional.empty();
+      while(true) {
+        String line = bufferedReader.readLine();
+        if (line == null) {
+          drawnSupplier();
+          return null;
+        }
+        Tweet tweet = new Tweet(line);
+        if (!tweet.isValid) {
+          continue;
+        }
+        return tweet;
       }
-      return Optional.of(new Tweet(line));
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
-
-    return Optional.empty();
-  }
-
-  public boolean hasMoreTweets() {
-    return bufferedReader != null;
   }
 
   public static class Tweet {
-    public static final Tweet EMPTY = new Tweet(" , , , , ,");
-
     public final String id;
     public final String hashTag;
     public final String user;
@@ -65,8 +74,12 @@ public class TweetsSupplier {
     public final String latitude;
     public final String longitude;
 
+    private final boolean isValid;
+
     public Tweet(String line) {
       String[] strings = line.split(",");
+
+      isValid = !(strings.length <= 2);
 
       id = strings.length > 0 ? strings[0] : "";
       hashTag = strings.length > 1 ? strings[1] : "";
@@ -81,7 +94,8 @@ public class TweetsSupplier {
     @Override
     public String toString() {
       return "Tweet{" +
-          "id='" + id + '\'' +
+          "isValid=" + isValid +
+          ", id='" + id + '\'' +
           ", hashTag='" + hashTag + '\'' +
           ", user='" + user + '\'' +
           ", message='" + message + '\'' +

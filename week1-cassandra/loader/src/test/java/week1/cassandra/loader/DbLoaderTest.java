@@ -9,6 +9,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,7 +34,9 @@ public class DbLoaderTest {
 
   @Test
   public void mainFlow() throws Exception {
-    DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier("oneLineTweet.csv"));
+    InputStream fileInputStream = new FileInputStream("oneLineTweet.csv");
+
+    DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier(fileInputStream));
     loader.truncateDb();
     loader.populateDb();
 
