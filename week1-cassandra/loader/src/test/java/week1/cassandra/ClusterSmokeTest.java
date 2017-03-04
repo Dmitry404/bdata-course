@@ -13,7 +13,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 public class ClusterSmokeTest {
-  @Ignore
   @Test
   public void checkIfRunning() {
     try (Cluster cluster = Cluster.builder()

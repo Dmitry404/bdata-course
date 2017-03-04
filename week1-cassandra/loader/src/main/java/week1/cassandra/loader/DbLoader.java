@@ -2,7 +2,7 @@ package week1.cassandra.loader;
 
 import com.datastax.driver.core.Session;
 
-class DbLoader {
+public class DbLoader {
   private final Session session;
   private final TweetsSupplier tweetsSupplier;
 
