@@ -1,0 +1,3 @@
+rootProject.name = 'week1-cassandra'
+
+include 'loader', 'webapp'

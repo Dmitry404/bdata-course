@@ -1,4 +1,4 @@
-package week1.cassandra.loader;
+package loader;
 
 import com.datastax.driver.core.Session;
 
@@ -33,7 +33,7 @@ public class DbLoader {
 
     session.execute("USE bdcourse");
 
-    String query = "CREATE TABLE tweets(id text PRIMARY KEY, "
+    String query = "CREATE TABLE IF NOT EXISTS tweets(id text PRIMARY KEY, "
         + "hashtag text, "
         + "user text, "
         + "message varchar );";

@@ -1,4 +1,4 @@
-package week1.cassandra.loader;
+package loader;
 
 import java.io.BufferedReader;
 import java.io.IOException;

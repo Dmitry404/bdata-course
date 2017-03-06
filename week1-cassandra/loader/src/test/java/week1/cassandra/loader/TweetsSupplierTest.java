@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import loader.TweetsSupplier;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 

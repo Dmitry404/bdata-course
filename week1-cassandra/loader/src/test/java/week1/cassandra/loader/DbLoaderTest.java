@@ -12,6 +12,9 @@ import org.junit.Test;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import loader.DbLoader;
+import loader.TweetsSupplier;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
