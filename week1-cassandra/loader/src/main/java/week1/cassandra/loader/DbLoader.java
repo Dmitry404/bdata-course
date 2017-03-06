@@ -26,4 +26,17 @@ public class DbLoader {
   public void truncateDb() {
     session.execute("TRUNCATE bdcourse.tweets");
   }
+
+  public void createDb() {
+    session.execute("CREATE KEYSPACE IF NOT EXISTS bdcourse\n" +
+        "WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 1}");
+
+    session.execute("USE bdcourse");
+
+    String query = "CREATE TABLE tweets(id text PRIMARY KEY, "
+        + "hashtag text, "
+        + "user text, "
+        + "message varchar );";
+    session.execute(query);
+  }
 }
