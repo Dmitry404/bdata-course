@@ -1,6 +1,5 @@
 package week1.cassandra.loader;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileInputStream;
