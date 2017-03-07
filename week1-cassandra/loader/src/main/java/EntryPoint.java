@@ -1,4 +1,5 @@
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,7 +12,7 @@ public class EntryPoint {
   /*
     EntryPoint.main("--load", "tweets.csv"); // loads to DB from tweets.csv
   */
-  public static void main(String... args) {
+  public static void main(String... args) throws FileNotFoundException {
     String filePath = "";
     String iterations = "";
 
@@ -41,7 +42,12 @@ public class EntryPoint {
 
       DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier(fileInputStream));
       loader.createDb();
-      loader.populateDb();
+      if (iterations.isEmpty()) {
+        loader.populateDb();
+      } else {
+        int iterationsNum = Integer.parseInt(iterations);
+        loader.populateDb(iterationsNum);
+      }
     }
   }
 }

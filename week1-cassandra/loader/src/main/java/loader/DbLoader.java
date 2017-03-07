@@ -11,18 +11,6 @@ public class DbLoader {
     this.tweetsSupplier = tweetsSupplier;
   }
 
-  public void populateDb() {
-    while (tweetsSupplier.hasMoreTweets()) {
-
-      TweetsSupplier.Tweet tweet = tweetsSupplier.getTweet();
-      if (tweet == null) {
-        return;
-      }
-      session.execute("INSERT INTO bdcourse.tweets(id, hashtag, user, message) VALUES (?, ?, ?, ?)",
-          tweet.id, tweet.hashTag, tweet.user, tweet.message);
-    }
-  }
-
   public void truncateDb() {
     session.execute("TRUNCATE bdcourse.tweets");
   }
@@ -38,5 +26,25 @@ public class DbLoader {
         + "user text, "
         + "message varchar );";
     session.execute(query);
+  }
+
+  public void populateDb() {
+    populateDb(1);
+  }
+
+  public void populateDb(int iterationsNum) {
+    while (tweetsSupplier.hasMoreTweets()) {
+      TweetsSupplier.Tweet tweet = tweetsSupplier.getTweet();
+      if (tweet == null) {
+        return;
+      }
+      int currentIter = iterationsNum;
+      while (currentIter > 0) {
+        String id = (currentIter != 1) ? tweet.id + currentIter : tweet.id;
+        session.execute("INSERT INTO bdcourse.tweets(id, hashtag, user, message) VALUES (?, ?, ?, ?)",
+            id, tweet.hashTag, tweet.user, tweet.message);
+        currentIter--;
+      }
+    }
   }
 }
