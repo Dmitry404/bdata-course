@@ -1,0 +1,25 @@
+version: "3"
+services:
+  cassandra-node-1:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-node-1
+  cassandra-node-2:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-node-2
+    links:
+      - cassandra-node-1:cassandra-host-1
+    command: "--seed cassandra-host-1"
+  loader:
+    build: ./loader
+    container_name: loader
+    links:
+      - cassandra-node-1:cassandra-host-1
+    command: "--host cassandra-host-1 --iter 5 --start-delay 1m"
+    restart: always
+    
+
+
+  
+
