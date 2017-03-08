@@ -13,11 +13,16 @@ public class EntryPoint {
     EntryPoint.main("--load", "tweets.csv"); // loads to DB from tweets.csv
   */
   public static void main(String... args) throws FileNotFoundException {
+    String host = "";
     String filePath = "";
     String iterations = "";
 
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
+
+      if (arg.equalsIgnoreCase("--host") && args.length > i + 1) {
+        host = args[i + 1];
+      }
 
       if (arg.equalsIgnoreCase("--load") && args.length > i + 1) {
         filePath = args[i + 1];
@@ -27,9 +32,13 @@ public class EntryPoint {
       }
     }
 
+    if (host.isEmpty()) {
+      host = "127.0.0.1";
+    }
+
     if (!filePath.isEmpty()) {
       Cluster cluster = Cluster.builder()
-          .addContactPoint("127.0.0.1")
+          .addContactPoint(host)
           .build();
 
       InputStream fileInputStream = null;
