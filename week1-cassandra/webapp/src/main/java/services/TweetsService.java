@@ -2,6 +2,7 @@ package services;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import org.springframework.stereotype.Component;
@@ -22,10 +23,15 @@ public class TweetsService {
   }
 
   public List<Tweet> getTweetsLimitedBy(int resultsOnPage) {
-    Session session = cluster.connect("bdcourse");
-    ResultSet resultSet = session.execute("SELECT id, hashtag, user, message FROM tweets LIMIT " + resultsOnPage);
+    try (Session session = cluster.connect("bdcourse")) {
+      ResultSet resultSet = session.execute("SELECT id, hashtag, user, message FROM tweets LIMIT " + resultsOnPage);
 
-    return resultSet.all().stream()
+      return collectResults(resultSet.all());
+    }
+  }
+
+  private List<Tweet> collectResults(List<Row> rows) {
+    return rows.stream()
         .map(row -> new Tweet(
             row.getString("id"),
             row.getString("hashtag"),
@@ -35,32 +41,22 @@ public class TweetsService {
   }
 
   public List<Tweet> findTweetsById(String id) {
-    Session session = cluster.connect("bdcourse");
-    ResultSet resultSet = session.execute(
-        "SELECT id, hashtag, user, message FROM tweets WHERE id='" + id + "'");
+    try (Session session = cluster.connect("bdcourse")) {
+      ResultSet resultSet = session.execute(
+          "SELECT id, hashtag, user, message FROM tweets WHERE id='" + id + "'");
 
-    return resultSet.all().stream()
-        .map(row -> new Tweet(
-            row.getString("id"),
-            row.getString("hashtag"),
-            row.getString("user"),
-            row.getString("message")))
-        .collect(Collectors.toList());
+      return collectResults(resultSet.all());
+    }
   }
 
   public Object findTweetsByMsg(String msg, int resultsOnPage) {
-    Session session = cluster.connect("bdcourse");
-    ResultSet resultSet = session.execute(
-        "SELECT id, hashtag, user, message FROM tweets WHERE expr(tweets_msg_index, '{ " +
-            "   query: {type: \"phrase\", field: \"message\", value: \""+ msg + "\", slop: 1} " +
-            "}') LIMIT " + resultsOnPage);
+    try (Session session = cluster.connect("bdcourse")) {
+      ResultSet resultSet = session.execute(
+          "SELECT id, hashtag, user, message FROM tweets WHERE expr(tweets_msg_index, '{ " +
+              "   query: {type: \"phrase\", field: \"message\", value: \"" + msg + "\", slop: 1} " +
+              "}') LIMIT " + resultsOnPage);
 
-    return resultSet.all().stream()
-        .map(row -> new Tweet(
-            row.getString("id"),
-            row.getString("hashtag"),
-            row.getString("user"),
-            row.getString("message")))
-        .collect(Collectors.toList());
+      return collectResults(resultSet.all());
+    }
   }
 }
