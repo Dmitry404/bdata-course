@@ -2,6 +2,8 @@ package loader;
 
 import com.datastax.driver.core.Session;
 
+import java.util.Random;
+
 public class DbLoader {
   private final Session session;
   private final TweetsSupplier tweetsSupplier;
@@ -27,6 +29,7 @@ public class DbLoader {
     String query = "CREATE TABLE IF NOT EXISTS tweets(id text PRIMARY KEY, "
         + "hashtag text, "
         + "user text, "
+        + "gaussian double, "
         + "message varchar );";
     session.execute(query);
   }
@@ -44,8 +47,8 @@ public class DbLoader {
       int currentIter = iterationsNum;
       while (currentIter > 0) {
         String id = (currentIter != 1) ? tweet.id + currentIter : tweet.id;
-        session.execute("INSERT INTO bdcourse.tweets(id, hashtag, user, message) VALUES (?, ?, ?, ?)",
-            id, tweet.hashTag, tweet.user, tweet.message);
+        session.execute("INSERT INTO bdcourse.tweets(id, hashtag, user, gaussian, message) VALUES (?, ?, ?, ?, ?)",
+            id, tweet.hashTag, tweet.user, new Random().nextGaussian(), tweet.message);
         currentIter--;
       }
     }
