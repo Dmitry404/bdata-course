@@ -47,4 +47,20 @@ public class TweetsService {
             row.getString("message")))
         .collect(Collectors.toList());
   }
+
+  public Object findTweetsByMsg(String msg, int resultsOnPage) {
+    Session session = cluster.connect("bdcourse");
+    ResultSet resultSet = session.execute(
+        "SELECT id, hashtag, user, message FROM tweets WHERE expr(tweets_msg_index, '{ " +
+            "   query: {type: \"phrase\", field: \"message\", value: \""+ msg + "\", slop: 1} " +
+            "}') LIMIT " + resultsOnPage);
+
+    return resultSet.all().stream()
+        .map(row -> new Tweet(
+            row.getString("id"),
+            row.getString("hashtag"),
+            row.getString("user"),
+            row.getString("message")))
+        .collect(Collectors.toList());
+  }
 }

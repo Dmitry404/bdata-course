@@ -33,10 +33,12 @@ public class DefaultController {
   public String search(Model model, @RequestParam("id") String id, @RequestParam("msg") String msg) {
     if (id.isEmpty() && msg.isEmpty()) {
       model.addAttribute("tweets", tweetsService.getTweetsLimitedBy(RESULTS_ON_PAGE));
+    } else if (!msg.isEmpty()) {
+      model.addAttribute("tweets", tweetsService.findTweetsByMsg(msg, RESULTS_ON_PAGE));
     } else {
       model.addAttribute("tweets", tweetsService.findTweetsById(id));
     }
-    model.addAttribute("search", true);
+
     return "main";
   }
 }

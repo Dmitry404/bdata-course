@@ -30,7 +30,21 @@ public class DbLoader {
         + "hashtag text, "
         + "user text, "
         + "gaussian double, "
-        + "message varchar );";
+        + "message varchar,"
+        + "lucene text );";
+    session.execute(query);
+
+    query = "CREATE CUSTOM INDEX IF NOT EXISTS tweets_msg_index ON tweets (lucene) " +
+        "USING 'com.stratio.cassandra.lucene.Index' " +
+        "WITH OPTIONS = { " +
+        "    'refresh_seconds' : '1', " +
+        "    'schema' : '{ " +
+        "        fields : { " +
+        "            message : {type : \"text\",  analyzer : \"english\"}" +
+        "        } " +
+        "    }'" +
+        "};";
+
     session.execute(query);
   }
 
