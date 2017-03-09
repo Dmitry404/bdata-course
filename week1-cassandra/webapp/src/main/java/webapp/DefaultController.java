@@ -1,12 +1,42 @@
 package webapp;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
+import java.util.ArrayList;
+import java.util.List;
+
+import services.TweetsService;
+
+@Controller
 public class DefaultController {
+  private final TweetsService tweetsService;
+  private static final int RESULTS_ON_PAGE = 5;
+
+  @Autowired
+  public DefaultController(TweetsService tweetsService) {
+    this.tweetsService = tweetsService;
+  }
+
   @RequestMapping("/")
-  public String index() {
-    return "Greetings from Spring Boot!";
+  public String index(Model model) {
+    model.addAttribute("tweets", tweetsService.getTweetsLimitedBy(RESULTS_ON_PAGE));
+
+    return "main";
+  }
+
+  @RequestMapping("/search")
+  public String search(Model model, @RequestParam("id") String id, @RequestParam("msg") String msg) {
+    if (id.isEmpty() && msg.isEmpty()) {
+      model.addAttribute("tweets", tweetsService.getTweetsLimitedBy(RESULTS_ON_PAGE));
+    } else {
+      model.addAttribute("tweets", tweetsService.findTweetsById(id));
+    }
+    model.addAttribute("search", true);
+    return "main";
   }
 }

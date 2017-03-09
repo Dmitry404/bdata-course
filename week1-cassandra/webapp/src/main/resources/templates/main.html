@@ -1,0 +1,38 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Hello Worm!</title>
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/milligram.css" th:href="@{/css/milligram.css}" />
+</head>
+<body>
+    <h2>Hey! Here are some results</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Message</th>
+            <th>Hash tag</th>
+        </tr>
+        <tr th:each="tweet : ${tweets}">
+            <td th:text="${tweet.id}"></td>
+            <td th:text="${tweet.user}"></td>
+            <td th:text="${tweet.message}"></td>
+            <td th:text="${tweet.hashtag}"></td>
+        </tr>
+    </table>
+
+    <h2>Try some search now</h2>
+
+    <form action="#" th:action="@{/search}">
+        <fieldset>
+            <label for="idField">by id</label>
+            <input type="text" placeholder="put an ID here" id="idField" name="id" />
+
+            <label for="msgField">or by message</label>
+            <input type="text" placeholder="Put a word here" id="msgField" name="msg" />
+
+            <input class="button-primary" type="submit" value="Search" />
+        </fieldset>
+    </form>
+</body>
+</html>
