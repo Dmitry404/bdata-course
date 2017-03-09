@@ -16,6 +16,7 @@ public class EntryPoint {
     String host = "";
     String filePath = "";
     String iterations = "";
+    String replicationFactor = "";
 
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
@@ -27,8 +28,13 @@ public class EntryPoint {
       if (arg.equalsIgnoreCase("--load") && args.length > i + 1) {
         filePath = args[i + 1];
       }
+
       if (arg.equalsIgnoreCase("--iter")) {
         iterations = (args.length > i + 1) ? args[i + 1] : "1";
+      }
+
+      if (arg.equalsIgnoreCase("--replication-factor")) {
+        replicationFactor = (args.length > i + 1) ? args[i + 1] : "1";
       }
     }
 
@@ -50,7 +56,12 @@ public class EntryPoint {
       }
 
       DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier(fileInputStream));
-      loader.createDb();
+      if (replicationFactor.equals("1")) {
+        loader.createDb();
+      } else {
+        int replicationFactorNum = Integer.parseInt(replicationFactor);
+        loader.createDb(replicationFactorNum);
+      }
       if (iterations.isEmpty()) {
         loader.populateDb();
       } else {

@@ -16,7 +16,7 @@ services:
     container_name: loader
     links:
       - cassandra-node-1:cassandra-host-1
-    command: "--host cassandra-host-1 --iter 5 --start-delay 1m"
+    command: "--host cassandra-host-1 --iter 5 --replication-factor 2 --start-delay 1m"
     restart: always
     
 

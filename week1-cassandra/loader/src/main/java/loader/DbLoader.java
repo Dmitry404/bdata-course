@@ -16,8 +16,11 @@ public class DbLoader {
   }
 
   public void createDb() {
+    createDb(1);
+  }
+  public void createDb(int replicationFactor) {
     session.execute("CREATE KEYSPACE IF NOT EXISTS bdcourse\n" +
-        "WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 1}");
+        "WITH replication = {'class':'SimpleStrategy', 'replication_factor' : " + replicationFactor + "}");
 
     session.execute("USE bdcourse");
 
