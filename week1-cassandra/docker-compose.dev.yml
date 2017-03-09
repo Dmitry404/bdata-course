@@ -1,0 +1,14 @@
+version: "3"
+services:
+  cassandra-node-small-1:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-node-small-1
+    ports:
+      - "9042:9042"
+  loader-small-1:
+    build: ./loader
+    container_name: loader-small-1
+    links:
+      - cassandra-node-small-1:cassandra-node-small-1
+    command: "--host cassandra-node-small-1 --load miniTweets.csv --start-delay 1m"

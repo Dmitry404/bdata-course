@@ -18,6 +18,14 @@ services:
       - cassandra-node-1:cassandra-host-1
     command: "--host cassandra-host-1 --iter 5 --replication-factor 2 --start-delay 2m"
     restart: always
+  webapp:
+    build: ./webapp
+    container_name: webapp
+    links:
+      - cassandra-node-1:cassandra-node-1
+    ports:
+      - "8080:8080"
+    command: "--host cassandra-node-1"
     
 
 
