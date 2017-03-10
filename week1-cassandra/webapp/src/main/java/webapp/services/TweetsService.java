@@ -1,4 +1,4 @@
-package services;
+package webapp.services;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import entities.Tweet;
+import webapp.entities.Tweet;
 
 @Component
 public class TweetsService {

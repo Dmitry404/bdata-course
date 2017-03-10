@@ -1,4 +1,4 @@
-package entities;
+package webapp.entities;
 
 public class Tweet {
   private String id;
