@@ -1,13 +1,11 @@
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
-import java.text.NumberFormat;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 public class NumbersLoader {
   private final int maxId;
@@ -39,10 +37,10 @@ public class NumbersLoader {
   }
 
   public void load() {
-    new Loader(parallelism).loadTo(id -> {
+    new Loader(parallelism).loadTo(data -> {
       try (Session session = cluster.newSession()) {
         String query = "INSERT INTO bdcourse.numbers(id, value, message) VALUES (?, ?, ?)";
-        session.execute(query, id, new Random().nextGaussian(), "hello worm");
+        session.execute(query, data.id, new Random().nextGaussian(), data.message);
       }
     }, maxId);
   }
@@ -55,13 +53,13 @@ public class NumbersLoader {
       this.parallelism = parallelism;
     }
 
-    public void loadTo(Consumer<Integer> consumer, int maxId) {
+    public void loadTo(Consumer<Data> consumer, int maxId) {
       ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
       forkJoinPool.submit(() -> {
         ThreadLocalRandom.current().ints(Long.MAX_VALUE, 1, maxId)
             .parallel()
             .filter(i -> i > 0)
-            .forEach(consumer::accept);
+            .forEach(id -> consumer.accept(new Data(id, Thread.currentThread().getName())));
         doneSignal.countDown();
       });
 
@@ -70,6 +68,16 @@ public class NumbersLoader {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+    }
+  }
+
+  private static class Data {
+    final int id;
+    final String message;
+
+    private Data(int id, String message) {
+      this.id = id;
+      this.message = message;
     }
   }
 }
