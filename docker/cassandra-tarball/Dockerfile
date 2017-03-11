@@ -1,6 +1,6 @@
 # Cassandra 3.10 image for BigData course
 # tarball installation
-FROM dmitry404/oracle-java8
+FROM dmitry404/openjdk-8
 LABEL maintainer dmity404@gmail.com
 
 RUN wget http://mirrors.ae-online.de/apache/cassandra/3.9/apache-cassandra-3.9-bin.tar.gz \

@@ -1,5 +1,5 @@
 # DB loader app - week1
-FROM dmitry404/oracle-java8
+FROM dmitry404/openjdk-8
 LABEL maintainer dmity404@gmail.com
 
 COPY build/libs/loader.jar loader.jar
