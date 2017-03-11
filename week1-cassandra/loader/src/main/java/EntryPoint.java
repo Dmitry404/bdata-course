@@ -1,9 +1,6 @@
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 import arguments.ArgumentsParser;
