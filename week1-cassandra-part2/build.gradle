@@ -1,0 +1,25 @@
+apply plugin: 'java'
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile 'com.datastax.cassandra:cassandra-driver-core:3.1.4'
+  compile 'org.slf4j:slf4j-api:1.7.21'
+  compile 'org.slf4j:slf4j-simple:1.7.21'
+  testCompile 'junit:junit:4.12'
+}
+
+jar {
+  baseName = "numbersLoader"
+  manifest {
+    attributes("Main-Class": "EntryPoint")
+  }
+
+  from {
+    (configurations.runtime).collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
+}
