@@ -40,6 +40,7 @@ public class DbLoaderTest {
     InputStream fileInputStream = new FileInputStream("oneLineTweet.csv");
 
     DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier(fileInputStream));
+    loader.createDb(1);
     loader.truncateDb();
     loader.populateDb();
 

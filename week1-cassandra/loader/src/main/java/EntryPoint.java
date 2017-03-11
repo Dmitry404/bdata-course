@@ -3,71 +3,34 @@ import com.datastax.driver.core.Session;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
+import arguments.ArgumentsParser;
 import loader.DbLoader;
 import loader.TweetsSupplier;
 
 public class EntryPoint {
-  /*
-    EntryPoint.main("--load", "tweets.csv"); // loads to DB from tweets.csv
-  */
-  public static void main(String... args) throws FileNotFoundException {
-    String host = "";
-    String filePath = "";
-    String iterations = "";
-    String replicationFactor = "";
+  public static void main(String... args) throws Exception {
+    ArgumentsParser arguments = new ArgumentsParser(args);
+    arguments.addDefault("host", "127.0.0.1");
+    arguments.addDefault("iter", "1");
+    arguments.addDefault("replication-factor", "1");
 
-    for (int i = 0; i < args.length; i++) {
-      String arg = args[i];
+    System.out.println(arguments);
+    
+    Cluster cluster = Cluster.builder()
+        .addContactPoint(arguments.get("host"))
+        .build();
 
-      if (arg.equalsIgnoreCase("--host") && args.length > i + 1) {
-        host = args[i + 1];
-      }
-
-      if (arg.equalsIgnoreCase("--load") && args.length > i + 1) {
-        filePath = args[i + 1];
-      }
-
-      if (arg.equalsIgnoreCase("--iter")) {
-        iterations = (args.length > i + 1) ? args[i + 1] : "1";
-      }
-
-      if (arg.equalsIgnoreCase("--replication-factor")) {
-        replicationFactor = (args.length > i + 1) ? args[i + 1] : "1";
-      }
-    }
-
-    if (host.isEmpty()) {
-      host = "127.0.0.1";
-    }
-
-    if (!filePath.isEmpty()) {
-      Cluster cluster = Cluster.builder()
-          .addContactPoint(host)
-          .build();
-
-      InputStream fileInputStream = null;
-      try {
-        fileInputStream = new FileInputStream(filePath);
-      } catch (FileNotFoundException e) {
-        System.err.println(e.getMessage());
-        System.exit(-1);
-      }
-
+    try (InputStream fileInputStream = new FileInputStream(arguments.get("load"))) {
       DbLoader loader = new DbLoader(cluster.newSession(), new TweetsSupplier(fileInputStream));
-      if (replicationFactor.equals("1")) {
-        loader.createDb();
-      } else {
-        int replicationFactorNum = Integer.parseInt(replicationFactor);
-        loader.createDb(replicationFactorNum);
-      }
-      if (iterations.isEmpty()) {
-        loader.populateDb();
-      } else {
-        int iterationsNum = Integer.parseInt(iterations);
-        loader.populateDb(iterationsNum);
-      }
+
+      int replicationFactorNum = Integer.parseInt(arguments.get("replication-factor"));
+      loader.createDb(replicationFactorNum);
+
+      int iterationsNum = Integer.parseInt(arguments.get("iter"));
+      loader.populateDb(iterationsNum);
     }
   }
 }
