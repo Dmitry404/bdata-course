@@ -19,14 +19,15 @@ public class ArgumentsParser {
     }
   }
 
-  public String get(String paramName) {
-    if (!argumentsMap.containsKey("--" + paramName)) {
-      throw new RuntimeException(paramName + " is required");
+  public String get(String arg) {
+    if (!argumentsMap.containsKey("--" + arg)) {
+      throw new RuntimeException(arg + " is required");
     }
-    return argumentsMap.get("--" + paramName);
+    return argumentsMap.get("--" + arg);
   }
 
   public void addDefault(String arg, String value) {
+    if (!argumentsMap.containsKey("--" + arg))
     argumentsMap.put("--" + arg, value);
   }
 
@@ -41,7 +42,6 @@ public class ArgumentsParser {
           out.append("\n");
         }
     );
-
     out.append("}");
 
     return out.toString();

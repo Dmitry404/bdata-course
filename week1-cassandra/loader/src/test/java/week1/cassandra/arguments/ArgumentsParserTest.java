@@ -64,4 +64,13 @@ public class ArgumentsParserTest {
     arguments.get("parallelism");
   }
 
+  @Test
+  public void nonDefaultValueShouldBeTaken_ifArgPresented() throws Exception {
+    String[] args = "--host 172.17.0.2".split(" ");
+    ArgumentsParser arguments = new ArgumentsParser(args);
+
+    arguments.addDefault("host", "127.0.0.1");
+
+    assertThat(arguments.get("host"), is("172.17.0.2"));
+  }
 }
