@@ -10,12 +10,14 @@ import java.util.Random;
 public class NumbersLoader {
   private final int maxId;
   private final int parallelism;
+  private final int replicationFactor;
 
   private final Cluster cluster;
 
-  public NumbersLoader(String clusterHost, int maxId, int parallelism) {
+  public NumbersLoader(String clusterHost, int maxId, int parallelism, int replicationFactor) {
     this.maxId = maxId;
     this.parallelism = parallelism;
+    this.replicationFactor = replicationFactor;
 
     cluster = Cluster.builder()
         .addContactPoint(clusterHost)
@@ -27,9 +29,8 @@ public class NumbersLoader {
   private void initDb() {
     try (Session session = cluster.connect()) {
       session.execute("CREATE KEYSPACE IF NOT EXISTS bdcourse\n" +
-          "WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 1}");
-      session.execute("USE bdcourse");
-      session.execute("CREATE TABLE IF NOT EXISTS numbers("
+          "WITH replication = {'class':'SimpleStrategy', 'replication_factor' : " + replicationFactor + "}");
+      session.execute("CREATE TABLE IF NOT EXISTS bdcourse.numbers("
           + "id int PRIMARY KEY, "
           + "value double, "
           + "diag_message varchar,"

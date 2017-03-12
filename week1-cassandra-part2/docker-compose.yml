@@ -34,7 +34,7 @@ services:
     container_name: cassandra-numbers-loader
     links:
       - cassandra-node-1
-    command: "--host cassandra-node-1 --parallelism 4 --max_id 200000"
+    command: "--host cassandra-node-1 --replicationFactor 2 --parallelism 4 --max_id 200000"
     depends_on:
       cassandra-node-1:
         condition: service_healthy 
