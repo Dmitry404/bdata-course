@@ -1,0 +1,20 @@
+version: "2.1"
+services:
+  cassandra-node-1:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-numbers-node-small
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9042"]
+      interval: 15s
+      timeout: 2s
+      retries: 10
+  loader:
+    build: .
+    container_name: cassandra-numbers-loader-small
+    links:
+      - cassandra-node-1
+    command: "--host cassandra-node-1"
+    depends_on:
+      cassandra-node-1:
+        condition: service_healthy 

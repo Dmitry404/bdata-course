@@ -1,0 +1,40 @@
+version: "2.1"
+services:
+  cassandra-node-1:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-numbers-node-1
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9042"]
+      interval: 15s
+      timeout: 2s
+      retries: 10
+  cassandra-node-2:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-numbers-node-2
+    links:
+      - cassandra-node-1
+    command: "--seed cassandra-node-1"
+    depends_on:
+      cassandra-node-1:
+        condition: service_healthy
+  cassandra-node-3:
+    build:
+      context: ../docker/cassandra-tarball
+    container_name: cassandra-numbers-node-3
+    links:
+      - cassandra-node-1
+    command: "--seed cassandra-node-1"
+    depends_on:
+      cassandra-node-1:
+        condition: service_healthy 
+  numbers-loader:
+    build: .
+    container_name: cassandra-numbers-loader
+    links:
+      - cassandra-node-1
+    command: "--host cassandra-node-1 --parallelism 4 --max_id 200000"
+    depends_on:
+      cassandra-node-1:
+        condition: service_healthy 
