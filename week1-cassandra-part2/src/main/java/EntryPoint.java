@@ -16,6 +16,6 @@ public class EntryPoint {
         Integer.parseInt(arguments.get("max_id")),
         Integer.parseInt(arguments.get("parallelism"))
     );
-    loader.load();
+    loader.load(Boolean.parseBoolean(arguments.get("sum_values")));
   }
 }

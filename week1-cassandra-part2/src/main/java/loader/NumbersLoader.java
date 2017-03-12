@@ -1,14 +1,11 @@
 package loader;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BiConsumer;
 
 public class NumbersLoader {
   private final int maxId;
@@ -36,46 +33,33 @@ public class NumbersLoader {
           + "id int PRIMARY KEY, "
           + "value double, "
           + "diag_message varchar,"
-          + "value_increments int,"
+          + "value_increment int,"
           + "updated_at timestamp"
           + ")");
     }
   }
 
-  public void load() {
+  public void load(boolean updateRecord) {
     new NumbersSupplier(parallelism).loadTo((id, diagMessage) -> {
+      double currentValue = 0.0;
+      int currentValueIncr = 0;
+
       try (Session session = cluster.newSession()) {
+        if (updateRecord) {
+          String query = "SELECT value, value_increment FROM bdcourse.numbers WHERE id=?";
+          Row row = session.execute(query, id).one();
+          if (row != null) {
+            currentValue = row.getDouble("value");
+            currentValueIncr = row.getInt("value_increment");
+          }
+        }
+
         String query = "INSERT INTO bdcourse.numbers(" +
             "id, value, diag_message," +
-            "value_increments, updated_at) VALUES (?, ?, ?, ?, ?)";
-        session.execute(query, id, new Random().nextGaussian(), diagMessage, 1, new Date());
+            "value_increment, updated_at) VALUES (?, ?, ?, ?, ?)";
+        session.execute(query, id, currentValue + new Random().nextGaussian(), diagMessage,
+            ++currentValueIncr, new Date());
       }
     }, maxId);
-  }
-
-  private static class NumbersSupplier {
-    private final int parallelism;
-    CountDownLatch doneSignal = new CountDownLatch(1);
-
-    NumbersSupplier(int parallelism) {
-      this.parallelism = parallelism;
-    }
-
-    void loadTo(BiConsumer<Integer, String> consumer, int maxId) {
-      ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
-      forkJoinPool.submit(() -> {
-        ThreadLocalRandom.current().ints(Long.MAX_VALUE, 1, maxId)
-            .parallel()
-            .filter(i -> i > 0)
-            .forEach(id -> consumer.accept(id, Thread.currentThread().getName()));
-        doneSignal.countDown();
-      });
-
-      try {
-        doneSignal.await();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
   }
 }
