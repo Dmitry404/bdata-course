@@ -3,6 +3,7 @@ package loader;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ForkJoinPool;
@@ -34,18 +35,20 @@ public class NumbersLoader {
       session.execute("CREATE TABLE IF NOT EXISTS numbers("
           + "id int PRIMARY KEY, "
           + "value double, "
-          + "diagMessage varchar)");
+          + "diag_message varchar,"
+          + "value_increments int,"
+          + "updated_at timestamp"
+          + ")");
     }
   }
 
   public void load() {
     new NumbersSupplier(parallelism).loadTo((id, diagMessage) -> {
       try (Session session = cluster.newSession()) {
-        String query = "INSERT INTO bdcourse.numbers(id, value, diagMessage) VALUES (?, ?, ?)";
-        session.execute(query, id, new Random().nextGaussian(), diagMessage);
-
-        //throw new RuntimeException("TODO read, sum and update");
-        // updatedAt, updatesCount
+        String query = "INSERT INTO bdcourse.numbers(" +
+            "id, value, diag_message," +
+            "value_increments, updated_at) VALUES (?, ?, ?, ?, ?)";
+        session.execute(query, id, new Random().nextGaussian(), diagMessage, 1, new Date());
       }
     }, maxId);
   }
