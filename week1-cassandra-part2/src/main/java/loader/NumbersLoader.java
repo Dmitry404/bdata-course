@@ -59,6 +59,8 @@ public class NumbersLoader {
             "value_increment, updated_at) VALUES (?, ?, ?, ?, ?)";
         session.execute(query, id, currentValue + new Random().nextGaussian(), diagMessage,
             ++currentValueIncr, new Date());
+      } catch (Exception e) {
+        System.err.println(e.getMessage());
       }
     }, maxId);
   }
