@@ -7,6 +7,7 @@ public class EntryPoint {
     arguments.addDefault("host", "127.0.0.1");
     arguments.addDefault("max_id", "1000");
     arguments.addDefault("parallelism", "1");
+    arguments.addDefault("sum_values", "false");
 
     System.out.println(arguments);
     

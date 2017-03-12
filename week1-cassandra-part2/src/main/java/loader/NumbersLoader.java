@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class NumbersLoader {
   private final int maxId;
@@ -34,34 +34,37 @@ public class NumbersLoader {
       session.execute("CREATE TABLE IF NOT EXISTS numbers("
           + "id int PRIMARY KEY, "
           + "value double, "
-          + "message varchar)");
+          + "diagMessage varchar)");
     }
   }
 
   public void load() {
-    new Loader(parallelism).loadTo(data -> {
+    new NumbersSupplier(parallelism).loadTo((id, diagMessage) -> {
       try (Session session = cluster.newSession()) {
-        String query = "INSERT INTO bdcourse.numbers(id, value, message) VALUES (?, ?, ?)";
-        session.execute(query, data.id, new Random().nextGaussian(), data.message);
+        String query = "INSERT INTO bdcourse.numbers(id, value, diagMessage) VALUES (?, ?, ?)";
+        session.execute(query, id, new Random().nextGaussian(), diagMessage);
+
+        //throw new RuntimeException("TODO read, sum and update");
+        // updatedAt, updatesCount
       }
     }, maxId);
   }
 
-  private static class Loader {
+  private static class NumbersSupplier {
     private final int parallelism;
     CountDownLatch doneSignal = new CountDownLatch(1);
 
-    public Loader(int parallelism) {
+    NumbersSupplier(int parallelism) {
       this.parallelism = parallelism;
     }
 
-    public void loadTo(Consumer<Data> consumer, int maxId) {
+    void loadTo(BiConsumer<Integer, String> consumer, int maxId) {
       ForkJoinPool forkJoinPool = new ForkJoinPool(parallelism);
       forkJoinPool.submit(() -> {
         ThreadLocalRandom.current().ints(Long.MAX_VALUE, 1, maxId)
             .parallel()
             .filter(i -> i > 0)
-            .forEach(id -> consumer.accept(new Data(id, Thread.currentThread().getName())));
+            .forEach(id -> consumer.accept(id, Thread.currentThread().getName()));
         doneSignal.countDown();
       });
 
@@ -70,16 +73,6 @@ public class NumbersLoader {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-    }
-  }
-
-  private static class Data {
-    final int id;
-    final String message;
-
-    private Data(int id, String message) {
-      this.id = id;
-      this.message = message;
     }
   }
 }
