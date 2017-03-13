@@ -9,6 +9,7 @@ public class EntryPoint {
     arguments.addDefault("parallelism", "1");
     arguments.addDefault("sum_values", "false");
     arguments.addDefault("replication_factor", "1");
+    arguments.addDefault("padding", "0");
 
     System.out.println(arguments);
     
@@ -16,7 +17,8 @@ public class EntryPoint {
         arguments.get("host"),
         Integer.parseInt(arguments.get("max_id")),
         Integer.parseInt(arguments.get("parallelism")),
-        Integer.parseInt(arguments.get("replication_factor"))
+        Integer.parseInt(arguments.get("replication_factor")),
+        Integer.parseInt(arguments.get("padding"))
     );
     loader.load(Boolean.parseBoolean(arguments.get("sum_values")));
   }

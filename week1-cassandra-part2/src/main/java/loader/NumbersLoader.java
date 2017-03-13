@@ -4,6 +4,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -13,11 +14,13 @@ public class NumbersLoader {
   private final int replicationFactor;
 
   private final Cluster cluster;
+  private String padding;
 
-  public NumbersLoader(String clusterHost, int maxId, int parallelism, int replicationFactor) {
+  public NumbersLoader(String clusterHost, int maxId, int parallelism, int replicationFactor, int padding) {
     this.maxId = maxId;
     this.parallelism = parallelism;
     this.replicationFactor = replicationFactor;
+    this.padding = String.join("", Collections.nCopies(padding, "-"));
 
     cluster = Cluster.builder()
         .addContactPoint(clusterHost)
@@ -35,8 +38,8 @@ public class NumbersLoader {
           + "value double, "
           + "diag_message varchar,"
           + "value_increment int,"
-          + "updated_at timestamp"
-          + ")");
+          + "updated_at timestamp,"
+          + "padding text)");
     }
   }
 
@@ -57,9 +60,12 @@ public class NumbersLoader {
 
         String query = "INSERT INTO bdcourse.numbers(" +
             "id, value, diag_message," +
-            "value_increment, updated_at) VALUES (?, ?, ?, ?, ?)";
-        session.execute(query, id, currentValue + new Random().nextGaussian(), diagMessage,
-            ++currentValueIncr, new Date());
+            "value_increment, updated_at," +
+            "padding) VALUES (?, ?, ?, ?, ?, ?)";
+        session.execute(query,
+            id, currentValue + new Random().nextGaussian(), diagMessage,
+            ++currentValueIncr, new Date(), padding
+        );
       } catch (Exception e) {
         System.err.println(e.getMessage());
       }
