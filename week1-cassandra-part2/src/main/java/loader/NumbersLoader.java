@@ -7,6 +7,7 @@ import com.datastax.driver.core.Session;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class NumbersLoader {
   private final int maxId;
@@ -66,9 +67,20 @@ public class NumbersLoader {
             id, currentValue + new Random().nextGaussian(), diagMessage,
             ++currentValueIncr, new Date(), padding
         );
-      } catch (Exception e) {
-        System.err.println(e.getMessage());
+      } catch (Exception ex) {
+        logErrorAndWait(ex);
       }
     }, maxId);
+  }
+
+  private void logErrorAndWait(Exception ex) {
+    String msg = String.format("ERROR[%s]:%s. Going to sleep for 15 sec",
+        Thread.currentThread().getName(), ex.getMessage());
+    System.err.println(msg);
+    try {
+      TimeUnit.SECONDS.sleep(15);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }
