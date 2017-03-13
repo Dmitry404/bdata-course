@@ -18,7 +18,6 @@ class NumbersSupplier {
     forkJoinPool.submit(() -> {
       ThreadLocalRandom.current().ints(Long.MAX_VALUE, 1, maxId)
           .parallel()
-          .filter(i -> i > 0)
           .forEach(id -> consumer.accept(id, Thread.currentThread().getName()));
       doneSignal.countDown();
     });
