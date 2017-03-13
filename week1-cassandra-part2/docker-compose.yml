@@ -19,15 +19,20 @@ services:
     depends_on:
       cassandra-node-1:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9042"]
+      interval: 15s
+      timeout: 2s
+      retries: 10
   cassandra-node-3:
     build:
       context: ../docker/cassandra-tarball
     container_name: cassandra-numbers-node-3
     links:
-      - cassandra-node-1
-    command: "--seed cassandra-node-1"
+      - cassandra-node-2
+    command: "--seed cassandra-node-2"
     depends_on:
-      cassandra-node-1:
+      cassandra-node-2:
         condition: service_healthy 
   numbers-loader:
     build: .
