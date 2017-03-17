@@ -1,11 +1,11 @@
 Is Cassandra a column-oriented storage, or not? Assuming the data model below (rows > column1, column2), I'm not sure. However, I can say for sure that Cassandra is a key-value storage.
 
-----
-*Cassandra data model*
+**Cassandra data model**
 
 Rows of Columns/Value. The most important thing is the primary key. It defines location of the data using its hash (there are different partitioning strategies exist)
 
 _Structure_
+
 Row Key -> Column1, Column1, .. ,ColumnN 
 
 Each column contains at least:
@@ -15,44 +15,52 @@ Each column contains at least:
   - Timestomb (for data removal)
 
 ----
-*What was tested*
+**What was tested**
 
 _Replication_
   - with a simulation of node's crash and restore. 
   - node assasination via nodetool.
+
 _Compaction_
   - different strategies (not much differences observed on the configuration I ran)
   - disabled compaction (data size grows on all nodes)
   - manual compaction via nodetool (compacts only one node, the one you run compaction on)
+
 _Nodetool commands tested_
   - status, tablestats, compactionhistory, compactionstats, getcompactionthroughput, getcompactionthreshold, getendpoints, getsstables
+
 _Load (endless stream of events of ±1k size with random PK withing 1..10_000_000)_
   - with lots of reads/writes
   - with only writes
     - not much difference because I didn't find a way to measure it
 
 ----
-*Configuration*
+**Configuration**
   - Helpful link https://www.ecyrd.com/cassandracalculator
+
 _replication factor_
   - says how many copies will be stored in cluster
   - set when creating a keyspace
+
 _consistency level (read/write)_ 
   - https://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html
+
 _eventual consistency_
   - means that the data will be eventually consistent, but not guaranteed that in this particular read
 
 _coordinator_
   - a node which receives read/write request from an app
+
 _cassandra ring_
   - cluster consists from nodes, each of which contains part of the hash values
   - nodes 
+
 _gossip_
   - protocol which is used by nodes to join a new node to cluster
   - "seed" parameter is passed onto a node, which will send "gossip" to the given host/ip
 
 ----
-*Java*
+**Java**
 - The driver I used https://github.com/datastax/java-driver
 - Lucene index https://github.com/Stratio/cassandra-lucene-index
 
@@ -65,7 +73,7 @@ _gossip_
 
 ----
 
-*Cassandra terms*
+**Cassandra terms**
 
 _node_ 
   - each node is responsible for a part of data in DB
@@ -106,7 +114,7 @@ _to make sure data is consistent_
   - read-repair 
 
 ----
-*CQL*
+**CQL**
   - table
   - row key
   - composite keys
