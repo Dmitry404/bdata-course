@@ -2,4 +2,5 @@ BigData course materials
 
 - Docker images
 - Exercises code
-- etc.
+- Observations
+  - [Cassandra](observations/1-cassandra.md)
