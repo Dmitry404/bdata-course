@@ -18,6 +18,10 @@ RUN sed -ri 's/^#.* (StrictHostKeyChecking).*/\1 no/' /etc/ssh/ssh_config \
   && ssh-keygen -t rsa -P "" -f $HOME/.ssh/id_rsa \
   && cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 
+COPY conf $HADOOP_DIR/etc/hadoop
+
 COPY entrypoint.sh $HADOOP_DIR/bin/entrypoint.sh
 
 ENTRYPOINT ["entrypoint.sh"]
+
+EXPOSE 50070

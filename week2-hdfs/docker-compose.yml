@@ -1,0 +1,14 @@
+version: "3"
+services:
+  hdfs-master:
+    build:
+      context: ../docker/hdfs-tarball
+    container_name: hdfs-master-node
+    command: "--run-as-master-with-slaves hdfs-slave-node"
+    ports:
+      - "50070:50070"
+  hdfs-slave:
+    build:
+      context: ../docker/hdfs-tarball
+    container_name: hdfs-slave-node
+    command: "hdfs-master-node"
