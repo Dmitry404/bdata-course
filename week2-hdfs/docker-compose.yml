@@ -18,3 +18,8 @@ services:
       context: ../docker/hdfs-tarball
     container_name: hdfs-slave-node-2
     command: "--run-as-slave-with-master hdfs-master-node"
+  hdfs-java-app:
+    build:
+      context: .
+    container_name: hdfs-java-app-node
+    command: "--load_stocks_data_to hdfs-master-node" # populate data on each run (it will overwrite the data if exists)

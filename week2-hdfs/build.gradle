@@ -24,3 +24,7 @@ jar {
     }
   }
 }
+
+test {
+  exclude 'integration/**'
+}

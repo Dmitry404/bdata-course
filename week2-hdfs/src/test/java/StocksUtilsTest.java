@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import utils.StocksUtils;
@@ -13,7 +14,7 @@ public class StocksUtilsTest {
   public void lengthIsReduced() throws Exception {
     String given = "2017-03-24,820.080017,821.929993,808.890015,814.429993,1970900,814.429993\n";
 
-    assertThat(StocksUtils.prepareString(given).length(), is(50));
+    assertThat(StocksUtils.packStockEntry(given).length(), is(50));
   }
 
   @Test
@@ -22,9 +23,9 @@ public class StocksUtilsTest {
     String case2 = "2017-03-24,82.080017,82.929993,80.890015,81.429993,1970900,81.429993\n";
     String case3 = "2017-03-24,8.080017,8.929993,8.890015,8.429993,1970900,8.429993\n";
 
-    assertThat("3.6f", StocksUtils.prepareString(case1), is("2017-03-24820.080017821.929993808.890015814.429993"));
-    assertThat("2.6f", StocksUtils.prepareString(case2), is("2017-03-24 82.080017 82.929993 80.890015 81.429993"));
-    assertThat("1.6f", StocksUtils.prepareString(case3), is("2017-03-24  8.080017  8.929993  8.890015  8.429993"));
+    assertThat("3.6f", StocksUtils.packStockEntry(case1), is("2017-03-24820.080017821.929993808.890015814.429993"));
+    assertThat("2.6f", StocksUtils.packStockEntry(case2), is("2017-03-24 82.080017 82.929993 80.890015 81.429993"));
+    assertThat("1.6f", StocksUtils.packStockEntry(case3), is("2017-03-24  8.080017  8.929993  8.890015  8.429993"));
 
   }
 
@@ -42,7 +43,7 @@ public class StocksUtilsTest {
     for (String stockData : readData.split("\n")) {
       String year = StocksUtils.getYear(stockData);
       String prices = acc.getOrDefault(year, "");
-      acc.put(year, prices + StocksUtils.prepareString(stockData));
+      acc.put(year, prices + StocksUtils.packStockEntry(stockData));
     }
 
     assertThat("Length 2 of 2017:", acc.get("2017").length(), is(2 * 50));
@@ -59,5 +60,13 @@ public class StocksUtilsTest {
     assertThat(StocksUtils.getYear(two), is("2016"));
   }
 
+  @Test
+  public void unpackStockEntry() throws Exception {
+    String given = "2017-03-24820.080017821.929993808.890015814.4299932017-03-24820.080017821.929993808.890015814.429993";
 
+    List<String> stockEntries = StocksUtils.unpackStockEntry(given);
+
+    assertThat(stockEntries.size(), is(2));
+    assertThat(stockEntries.get(0), is("2017-03-24,820.080017,821.929993,808.890015,814.429993"));
+  }
 }

@@ -15,8 +15,11 @@ import utils.StocksDataPopulator;
 import utils.StocksUtils;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 
@@ -53,11 +56,12 @@ public class AppFlowsTest {
 
   @Test
   public void readPath() throws Exception {
-    // read params - you need year and stock and a limit
-    // locate a file on HDFS
-    // read (limit*n) bytes
-    // convert to string (simplified way, just a string, no objects/formatters required)
-    // #Date, #Open, #High, #Low, #Close
+    StocksCluster stockCluster = new StocksCluster();
+    StocksDataPopulator dataPopulator = new StocksDataPopulator(stockCluster);
+
+    StocksUtils.Source.getFilePaths().forEach(dataPopulator::populateDataFrom);
+
+    assertThat(stockCluster.readStocksData("AAPL", "1980"), not(empty()));
   }
 
   private class FakeStocksCluster extends StocksCluster {

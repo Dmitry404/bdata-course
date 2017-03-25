@@ -17,6 +17,8 @@ public class StocksDataPopulator {
   }
 
   public void populateDataFrom(String fileName) {
+    System.out.println("Populating Stocks data from: " + fileName);
+
     File companyStocksDataFile = new File(fileName);
     String company = getCompanyNameFrom(companyStocksDataFile);
 
@@ -36,12 +38,12 @@ public class StocksDataPopulator {
           if (currentYear.equals(year) || currentYear.isEmpty()) {
             currentYear = year;
 
-            stocksData += StocksUtils.prepareString(dayEntry);
+            stocksData += StocksUtils.packStockEntry(dayEntry);
           } else {
             cluster.writeStocksDataToHdfs(currentYear, company, stocksData);
 
             currentYear = year;
-            stocksData = StocksUtils.prepareString(dayEntry);
+            stocksData = StocksUtils.packStockEntry(dayEntry);
           }
         } else {
           cluster.writeStocksDataToHdfs(currentYear, company, stocksData);
