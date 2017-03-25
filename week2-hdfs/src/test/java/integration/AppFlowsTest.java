@@ -1,5 +1,7 @@
 package integration;
 
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.Path;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import utils.StocksDataPopulator;
 import utils.StocksUtils;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertThat;
 
 
@@ -38,18 +42,13 @@ public class AppFlowsTest {
 
   @Test
   public void loadStocks_toHDFS() throws Exception {
-    StocksCluster cluster = new StocksCluster();
-    StocksDataPopulator dataPopulator = new StocksDataPopulator(cluster);
+    StocksCluster stockCluster = new StocksCluster();
+    StocksDataPopulator dataPopulator = new StocksDataPopulator(stockCluster);
 
     StocksUtils.Source.getFilePaths().forEach(dataPopulator::populateDataFrom);
-  }
 
-  @Test
-  public void listPath() throws Exception {
-    // list years
-      // list companies
-
-
+    assertThat("2017", isIn(stockCluster.listYears()));
+    assertThat("AAPL", isIn(stockCluster.listCompaniesIn("2017")));
   }
 
   @Test
@@ -61,16 +60,6 @@ public class AppFlowsTest {
     // #Date, #Open, #High, #Low, #Close
   }
 
-  @Test
-  public void writePath() throws Exception {
-    // read from file
-    // reduce each line
-    // if valid find the path
-    // append to hdfs onto correct path, e.g. 2017/AAPL.dat
-    // if not valid, just skip
-  }
-
-
   private class FakeStocksCluster extends StocksCluster {
     private Set<String> yearsWritten = new HashSet<>();
     private Set<String> companiesWritten = new HashSet<>();
@@ -81,11 +70,11 @@ public class AppFlowsTest {
       companiesWritten.add(company);
     }
 
-    public Set<String> getYears() {
+    Set<String> getYears() {
       return yearsWritten;
     }
 
-    public Set<String> getCompanies() {
+    Set<String> getCompanies() {
       return companiesWritten;
     }
   }
