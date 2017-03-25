@@ -7,6 +7,7 @@ services:
     command: "--run-as-master-with-slaves hdfs-slave-node hdfs-slave-node-2"
     ports:
       - "50070:50070"
+      - "9009:9009"
   hdfs-slave:
     build:
       context: ../docker/hdfs-tarball
