@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class PaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
+public class SimplePaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
   private Gson gson = new GsonBuilder()
       .registerTypeAdapter(Double.class, createDoubleSerializer())
       .create();
