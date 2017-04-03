@@ -1,4 +1,4 @@
-package payments;
+package payments.simple;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +15,9 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class SimplePaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
+import payments.GroupedPayment;
+
+public class SimplifiedPaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
   private Gson gson = new GsonBuilder()
       .registerTypeAdapter(Double.class, createDoubleSerializer())
       .create();
@@ -39,12 +41,12 @@ public class SimplePaymentsReducer extends Reducer<LongWritable, Text, NullWrita
     }
 
     if (!stores.isEmpty()) {
-      PaymentEntry payment = new PaymentEntry(key.get(), total, stores);
+      GroupedPayment payment = new GroupedPayment(key.get(), total, stores);
       context.write(NullWritable.get(), getPaymentJson(payment));
     }
   }
 
-  private Text getPaymentJson(PaymentEntry paymentEntry) {
-    return new Text(gson.toJson(paymentEntry, PaymentEntry.class));
+  private Text getPaymentJson(GroupedPayment paymentEntry) {
+    return new Text(gson.toJson(paymentEntry, GroupedPayment.class));
   }
 }
