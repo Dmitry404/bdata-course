@@ -1,4 +1,4 @@
-package payments;
+package payments.json;
 
 import java.util.Set;
 

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.TreeSet;
 
-import payments.GroupedPayment;
+import payments.json.GroupedPayment;
 
 public class SimplifiedPaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
   private Gson gson = new GsonBuilder()
