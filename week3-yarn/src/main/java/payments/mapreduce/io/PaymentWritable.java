@@ -1,4 +1,4 @@
-package payments.io;
+package payments.mapreduce.io;
 
 import org.apache.hadoop.io.Writable;
 

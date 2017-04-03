@@ -9,16 +9,14 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import payments.io.GroupedPaymentWritable;
-import payments.PaymentsReducer;
-import payments.io.PaymentWritable;
-import payments.PaymentsMapper;
+import payments.mapreduce.PaymentsJob;
+import payments.mapreduce.io.GroupedPaymentWritable;
+import payments.mapreduce.io.PaymentWritable;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -27,7 +25,7 @@ import static org.junit.Assert.assertThat;
 public class PaymentsMapReduceTests {
   @Test
   public void testPaymentsMapper_with_PaymentWritable() throws Exception {
-    MapDriver<NullWritable, Text, LongWritable, PaymentWritable> mapDriver = new MapDriver<>(new PaymentsMapper());
+    MapDriver<NullWritable, Text, LongWritable, PaymentWritable> mapDriver = new MapDriver<>(new PaymentsJob.PaymentsMapper());
 
     String rawData =
         "2016-07-02 20:52:39 1 12.01 www.store1.com\n" +
@@ -55,7 +53,7 @@ public class PaymentsMapReduceTests {
 
   @Test
   public void testPaymentsReducer_with_GroupedPaymentWritable() throws Exception {
-    ReduceDriver<LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> reduceDriver = new ReduceDriver<>(new PaymentsReducer());
+    ReduceDriver<LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> reduceDriver = new ReduceDriver<>(new PaymentsJob.PaymentsReducer());
 
     List<Pair<LongWritable, List<PaymentWritable>>> inputData = new ArrayList<>();
     inputData.add(createInputDataPair(1,
@@ -89,7 +87,7 @@ public class PaymentsMapReduceTests {
   @Test
   public void testPayments_MapReduce_flow() throws Exception {
     MapReduceDriver<NullWritable, Text, LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> mrDriver =
-      new MapReduceDriver<>(new PaymentsMapper(), new PaymentsReducer());
+      new MapReduceDriver<>(new PaymentsJob.PaymentsMapper(), new PaymentsJob.PaymentsReducer());
 
     String rawData =
         "2016-07-02 20:52:39 1 12.01 www.store1.com\n" +
@@ -106,16 +104,16 @@ public class PaymentsMapReduceTests {
     splitByLines(rawData).forEach(line -> mrDriver.withInput(NullWritable.get(), new Text(line)));
 
     mrDriver.withOutput(NullWritable.get(),
-        new GroupedPaymentWritable(1, 106.72, getStoresHash("www.store1.com", "www.store3.com")));
+        new GroupedPaymentWritable(1, 106.72, getStoresFrom("www.store1.com", "www.store3.com")));
     mrDriver.withOutput(NullWritable.get(),
-        new GroupedPaymentWritable(12, 185.66, getStoresHash("www.store2.com", "www.store4.com")));
+        new GroupedPaymentWritable(12, 185.66, getStoresFrom("www.store2.com", "www.store4.com")));
     mrDriver.withOutput(NullWritable.get(),
-        new GroupedPaymentWritable(1123, 16.5, getStoresHash("www.store1.com")));
+        new GroupedPaymentWritable(1123, 16.5, getStoresFrom("www.store1.com")));
 
     mrDriver.runTest();
   }
 
-  private Set<String> getStoresHash(String...stores) {
+  private Set<String> getStoresFrom(String...stores) {
     return Arrays.stream(stores).collect(Collectors.toSet());
   }
 
