@@ -1,6 +1,6 @@
 # Hadoop image
 FROM dmitry404/openjdk-8
-LABEL maintainer dmity404@gmail.com
+LABEL maintainer dmitry404@gmail.com
 
 RUN wget http://apache.lauf-forum.at/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz \
   && tar -xzf hadoop-2.7.3.tar.gz \
