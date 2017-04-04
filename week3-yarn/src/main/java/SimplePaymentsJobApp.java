@@ -12,6 +12,7 @@ public class SimplePaymentsJobApp {
     FileInputFormat.addInputPath(jobConf.getJob(), new Path("/input.dat"));
     FileOutputFormat.setOutputPath(jobConf.getJob(), new Path("/output"));
 
-    jobConf.getJob().waitForCompletion(true);
+    int exitCode = jobConf.getJob().waitForCompletion(true) ? 1 : 0;
+    System.exit(exitCode);
   }
 }

@@ -10,6 +10,8 @@ services:
       - "8042:8042"
       - "50070:50070"
       - "9009:9009"
+    volumes:
+      - ./shared:/root/app:ro
   hadoop-slave:
     build:
       context: ../docker/hadoop-tarball
