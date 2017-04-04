@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import payments.mapreduce.simple.PaymentsJob;
+import payments.mapreduce.simple.SimplePaymentsJob;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThat;
 public class PaymentsSimplifiedMapReduceTests {
   @Test
   public void testPaymentsMapper_result_shouldContainAllPayments() throws Exception {
-    MapDriver<NullWritable, Text, LongWritable, Text> mapDriver = new MapDriver<>(new PaymentsJob.SimplifiedPaymentsMapper());
+    MapDriver<LongWritable, Text, LongWritable, Text> mapDriver = new MapDriver<>(new SimplePaymentsJob.PaymentsMapper());
 
     String rawData =
       "2016-07-02 20:52:39 1 12.01 www.store1.com\n" +
@@ -30,7 +30,7 @@ public class PaymentsSimplifiedMapReduceTests {
 
     String[] lines = rawData.split("\n");
     for (String input : lines) {
-      mapDriver.withInput(NullWritable.get(), new Text(input));
+      mapDriver.withInput(new LongWritable(0), new Text(input));
     }
 
     List<Pair<LongWritable, Text>> mapResult = mapDriver.run();
@@ -49,7 +49,7 @@ public class PaymentsSimplifiedMapReduceTests {
 
   @Test
   public void testPaymentsReducer_result_shouldContainGroupedPayments_orderedBy_ID_ASC() throws Exception {
-    ReduceDriver<LongWritable, Text, NullWritable, Text> reduceDriver = new ReduceDriver<>(new PaymentsJob.SimplifiedPaymentsReducer());
+    ReduceDriver<LongWritable, Text, NullWritable, Text> reduceDriver = new ReduceDriver<>(new SimplePaymentsJob.PaymentsReducer());
 
     List<Text> items1 = Arrays.asList(new Text("12.01:www.store1.com"), new Text("77.70:www.store3.com"));
     List<Text> items2 = Arrays.asList(new Text("4.05:www.store2.com"));
@@ -75,12 +75,12 @@ public class PaymentsSimplifiedMapReduceTests {
 
   @Test
   public void testPayments_withSimplePaymentReducer_mapReduceCycle() throws Exception {
-    MapReduceDriver<NullWritable, Text, LongWritable, Text, NullWritable, Text> mrDriver =
-        MapReduceDriver.newMapReduceDriver(new PaymentsJob.SimplifiedPaymentsMapper(), new PaymentsJob.SimplifiedPaymentsReducer());
+    MapReduceDriver<LongWritable, Text, LongWritable, Text, NullWritable, Text> mrDriver =
+        MapReduceDriver.newMapReduceDriver(new SimplePaymentsJob.PaymentsMapper(), new SimplePaymentsJob.PaymentsReducer());
 
-    mrDriver.withInput(NullWritable.get(), new Text("2016-07-02 20:52:39 1 12.01 www.store1.com"));
-    mrDriver.withInput(NullWritable.get(), new Text("2016-07-02 20:52:39 2 1.75 www.store1.com"));
-    mrDriver.withInput(NullWritable.get(), new Text("2016-07-02 20:52:39 2 4.05 www.store2.com"));
+    mrDriver.withInput(new LongWritable(0), new Text("2016-07-02 20:52:39 1 12.01 www.store1.com"));
+    mrDriver.withInput(new LongWritable(0), new Text("2016-07-02 20:52:39 2 1.75 www.store1.com"));
+    mrDriver.withInput(new LongWritable(0), new Text("2016-07-02 20:52:39 2 4.05 www.store2.com"));
 
     mrDriver.withOutput(NullWritable.get(), new Text("{\"id\":1,\"total\":12.01,\"stores\":[\"www.store1.com\"]}"));
     mrDriver.withOutput(NullWritable.get(), new Text("{\"id\":2,\"total\":5.80,\"stores\":[\"www.store1.com\",\"www.store2.com\"]}"));

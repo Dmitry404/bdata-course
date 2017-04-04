@@ -1,8 +1,10 @@
 package payments.mapreduce;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -11,10 +13,32 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.TreeSet;
 
+
 import payments.mapreduce.io.GroupedPaymentWritable;
 import payments.mapreduce.io.PaymentWritable;
 
 public class PaymentsJob {
+  private final static String NAME = "SimplePaymentsJob";
+  private Job job;
+
+  public void PaymentsJob(Configuration conf) {
+    try {
+      job = Job.getInstance(conf, NAME);
+
+      job.setMapperClass(PaymentsMapper.class);
+      job.setReducerClass(PaymentsReducer.class);
+
+      job.setOutputKeyClass(NullWritable.class);
+      job.setOutputValueClass(PaymentWritable.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Job getJob() {
+    return job;
+  }
+
   public static class PaymentsMapper extends Mapper<NullWritable, Text, LongWritable, PaymentWritable> {
     @Override
     protected void map(NullWritable key, Text value, Context context) throws IOException, InterruptedException {

@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -18,10 +20,30 @@ import java.util.TreeSet;
 
 import payments.json.GroupedPayment;
 
-public class PaymentsJob {
-  public static class SimplifiedPaymentsMapper extends Mapper<NullWritable, Text, LongWritable, Text> {
+public class SimplePaymentsJob {
+  private final static String NAME = "SimplePaymentsJob";
+  private Job job;
+
+  public SimplePaymentsJob(Configuration conf) {
+    try {
+      job = Job.getInstance(conf, NAME);
+      job.setJarByClass(SimplePaymentsJob.class);
+
+      job.setMapperClass(PaymentsMapper.class);
+      job.setReducerClass(PaymentsReducer.class);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Job getJob() {
+    return job;
+  }
+
+  public static class PaymentsMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
     @Override
-    protected void map(NullWritable key, Text value, Context context) throws IOException, InterruptedException {
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
       String[] tokens = value.toString().split(" ");
       if (tokens.length >= 5) {
         LongWritable id = new LongWritable(Long.valueOf(tokens[2]));
@@ -32,7 +54,7 @@ public class PaymentsJob {
     }
   }
 
-  public static class SimplifiedPaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
+  public static class PaymentsReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
     private Gson gson = new GsonBuilder()
         .registerTypeAdapter(Double.class, createDoubleSerializer())
         .create();

@@ -5,7 +5,7 @@
   <property>
     <name>mapreduce.framework.name</name>
     <value>yarn</value>
-    <decsription>The runtime framework for executing MapReduce jobs. 
+    <description>The runtime framework for executing MapReduce jobs. 
     Can be one of local, classic or yarn.
     </description>
   </property>
