@@ -3,11 +3,11 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import payments.mapreduce.simple.SimplePaymentsJob;
+import payments.mapreduce.SimplePaymentsJobConf;
 
-public class SimplePaymentsJobApp {
+public class JsonPaymentsJobApp {
   public static void main(String[] args) throws Exception {
-    SimplePaymentsJob jobConf = new SimplePaymentsJob(new Configuration(true));
+    SimplePaymentsJobConf jobConf = new SimplePaymentsJobConf(new Configuration(true));
 
     FileInputFormat.addInputPath(jobConf.getJob(), new Path("/input.dat"));
     FileOutputFormat.setOutputPath(jobConf.getJob(), new Path("/output"));

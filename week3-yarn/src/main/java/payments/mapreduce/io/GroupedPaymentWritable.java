@@ -22,6 +22,18 @@ public class GroupedPaymentWritable implements WritableComparable<GroupedPayment
     this.stores = stores;
   }
 
+  public long getPaymentId() {
+    return paymentId;
+  }
+
+  public double getTotal() {
+    return total;
+  }
+
+  public Set<String> getStores() {
+    return stores;
+  }
+
   @Override
   public int compareTo(GroupedPaymentWritable o) {
     return Long.compare(paymentId, o.paymentId);

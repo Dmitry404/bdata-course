@@ -1,4 +1,4 @@
-package payments.mapreduce.simple;
+package payments.mapreduce;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,14 +20,14 @@ import java.util.TreeSet;
 
 import payments.json.GroupedPayment;
 
-public class SimplePaymentsJob {
+public class SimplePaymentsJobConf {
   private final static String NAME = "SimplePaymentsJob";
   private Job job;
 
-  public SimplePaymentsJob(Configuration conf) {
+  public SimplePaymentsJobConf(Configuration conf) {
     try {
       job = Job.getInstance(conf, NAME);
-      job.setJarByClass(SimplePaymentsJob.class);
+      job.setJarByClass(SimplePaymentsJobConf.class);
 
       job.setMapperClass(PaymentsMapper.class);
       job.setReducerClass(PaymentsReducer.class);

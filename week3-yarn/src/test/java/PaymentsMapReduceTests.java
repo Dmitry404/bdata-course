@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import payments.mapreduce.PaymentsJob;
+import payments.mapreduce.Payments;
 import payments.mapreduce.io.GroupedPaymentWritable;
 import payments.mapreduce.io.PaymentWritable;
 
@@ -25,14 +25,14 @@ import static org.junit.Assert.assertThat;
 public class PaymentsMapReduceTests {
   @Test
   public void testPaymentsMapper_with_PaymentWritable() throws Exception {
-    MapDriver<NullWritable, Text, LongWritable, PaymentWritable> mapDriver = new MapDriver<>(new PaymentsJob.PaymentsMapper());
+    MapDriver<LongWritable, Text, LongWritable, PaymentWritable> mapDriver = new MapDriver<>(new Payments.PaymentsMapper());
 
     String rawData =
         "2016-07-02 20:52:39 1 12.01 www.store1.com\n" +
         "2016-07-02 20:52:39 12 4.05 www.store2.com\n" +
         "2016-07-02 20:52:40 1 77.70 www.store3.com";
 
-    splitByLines(rawData).forEach(line -> mapDriver.withInput(NullWritable.get(), new Text(line)));
+    splitByLines(rawData).forEach(line -> mapDriver.withInput(new LongWritable(0), new Text(line)));
 
     Pair<LongWritable, PaymentWritable> matchItem1 = createMapPair(1, 12.01, "www.store1.com");
     Pair<LongWritable, PaymentWritable> matchItem2 = createMapPair(12, 4.05, "www.store2.com");
@@ -53,7 +53,7 @@ public class PaymentsMapReduceTests {
 
   @Test
   public void testPaymentsReducer_with_GroupedPaymentWritable() throws Exception {
-    ReduceDriver<LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> reduceDriver = new ReduceDriver<>(new PaymentsJob.PaymentsReducer());
+    ReduceDriver<LongWritable, PaymentWritable, LongWritable, GroupedPaymentWritable> reduceDriver = new ReduceDriver<>(new Payments.PaymentsReducer());
 
     List<Pair<LongWritable, List<PaymentWritable>>> inputData = new ArrayList<>();
     inputData.add(createInputDataPair(1,
@@ -64,16 +64,16 @@ public class PaymentsMapReduceTests {
 
     inputData.forEach(reduceDriver::withInput);
 
-    Pair<NullWritable, GroupedPaymentWritable> matchItem1 = createOutputDataPair(1,10.50 + 2.11, "www.store1.com", "www.store2.com");
-    Pair<NullWritable, GroupedPaymentWritable> matchItem2 = createOutputDataPair(2, 70.65, "www.store1.com");
+    Pair<LongWritable, GroupedPaymentWritable> matchItem1 = createOutputDataPair(1,10.50 + 2.11, "www.store1.com", "www.store2.com");
+    Pair<LongWritable, GroupedPaymentWritable> matchItem2 = createOutputDataPair(2, 70.65, "www.store1.com");
 
-    List<Pair<NullWritable, GroupedPaymentWritable>> reduceResult = reduceDriver.run();
+    List<Pair<LongWritable, GroupedPaymentWritable>> reduceResult = reduceDriver.run();
 
     assertThat(reduceResult, contains(matchItem1, matchItem2));
   }
 
-  private Pair<NullWritable, GroupedPaymentWritable> createOutputDataPair(long paymentId, double total, String... stores) {
-    return new Pair<>(NullWritable.get(), new GroupedPaymentWritable(paymentId, total, new TreeSet<>(Arrays.asList(stores))));
+  private Pair<LongWritable, GroupedPaymentWritable> createOutputDataPair(long paymentId, double total, String... stores) {
+    return new Pair<>(new LongWritable(0), new GroupedPaymentWritable(paymentId, total, new TreeSet<>(Arrays.asList(stores))));
   }
 
   private Pair<LongWritable, List<PaymentWritable>> createInputDataPair(long paymentId, Pair<Double, String>... paymentEntries) {
@@ -86,8 +86,8 @@ public class PaymentsMapReduceTests {
 
   @Test
   public void testPayments_MapReduce_flow() throws Exception {
-    MapReduceDriver<NullWritable, Text, LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> mrDriver =
-      new MapReduceDriver<>(new PaymentsJob.PaymentsMapper(), new PaymentsJob.PaymentsReducer());
+    MapReduceDriver<LongWritable, Text, LongWritable, PaymentWritable, LongWritable, GroupedPaymentWritable> mrDriver =
+      new MapReduceDriver<>(new Payments.PaymentsMapper(), new Payments.PaymentsReducer());
 
     String rawData =
         "2016-07-02 20:52:39 1 12.01 www.store1.com\n" +
@@ -101,13 +101,13 @@ public class PaymentsMapReduceTests {
         "2016-07-02 20:52:40 1 77.70 www.store3.com\n" +
         "2016-07-02 20:52:40 12 1.99 www.store4.com";
 
-    splitByLines(rawData).forEach(line -> mrDriver.withInput(NullWritable.get(), new Text(line)));
+    splitByLines(rawData).forEach(line -> mrDriver.withInput(new LongWritable(0), new Text(line)));
 
-    mrDriver.withOutput(NullWritable.get(),
+    mrDriver.withOutput(new LongWritable(0),
         new GroupedPaymentWritable(1, 106.72, getStoresFrom("www.store1.com", "www.store3.com")));
-    mrDriver.withOutput(NullWritable.get(),
+    mrDriver.withOutput(new LongWritable(0),
         new GroupedPaymentWritable(12, 185.66, getStoresFrom("www.store2.com", "www.store4.com")));
-    mrDriver.withOutput(NullWritable.get(),
+    mrDriver.withOutput(new LongWritable(0),
         new GroupedPaymentWritable(1123, 16.5, getStoresFrom("www.store1.com")));
 
     mrDriver.runTest();
