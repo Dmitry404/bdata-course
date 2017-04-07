@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.InvalidJobConfException;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.OutputCommitter;
@@ -21,7 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PaymentsOutputFormat extends OutputFormat<LongWritable, GroupedPaymentWritable> {
+public class PaymentsOutputFormat extends OutputFormat<NullWritable, GroupedPaymentWritable> {
   @Override
   public RecordWriter getRecordWriter(TaskAttemptContext job) throws IOException, InterruptedException {
     return new PaymentsGroupRecordWriter(getOutputDirectoryPath(job), job.getConfiguration());
@@ -44,7 +45,7 @@ public class PaymentsOutputFormat extends OutputFormat<LongWritable, GroupedPaym
     return new FileOutputCommitter(getOutputDirectoryPath(context), context);
   }
 
-  static class PaymentsGroupRecordWriter extends RecordWriter<LongWritable, GroupedPaymentWritable> {
+  static class PaymentsGroupRecordWriter extends RecordWriter<NullWritable, GroupedPaymentWritable> {
     private static final String OUTPUT_FILE_NAME = "part-r-00000";
 
     private Path outputFilePath;
@@ -57,7 +58,7 @@ public class PaymentsOutputFormat extends OutputFormat<LongWritable, GroupedPaym
     }
 
     @Override
-    public void write(LongWritable key, GroupedPaymentWritable value) throws IOException, InterruptedException {
+    public void write(NullWritable key, GroupedPaymentWritable value) throws IOException, InterruptedException {
       FileSystem fs = FileSystem.get(configuration);
       FSDataOutputStream fileOutStream;
 

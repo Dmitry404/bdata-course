@@ -1,6 +1,7 @@
 package payments.mapreduce;
 
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -14,7 +15,7 @@ import java.util.TreeSet;
 import payments.mapreduce.io.GroupedPaymentWritable;
 import payments.mapreduce.io.PaymentWritable;
 
-public class Payments {
+public class PaymentsMR {
   public final static String JOB_NAME = "PaymentsJob";
 
   public static class PaymentsMapper extends Mapper<LongWritable, Text, LongWritable, PaymentWritable> {
@@ -31,7 +32,7 @@ public class Payments {
     }
   }
 
-  public static class PaymentsReducer extends Reducer<LongWritable, PaymentWritable, LongWritable, GroupedPaymentWritable> {
+  public static class PaymentsReducer extends Reducer<LongWritable, PaymentWritable, NullWritable, GroupedPaymentWritable> {
     @Override
     protected void reduce(LongWritable key, Iterable<PaymentWritable> values, Context context) throws IOException, InterruptedException {
       double total = 0.0;
@@ -42,7 +43,7 @@ public class Payments {
       }
 
       total = (new BigDecimal(total)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-      context.write(new LongWritable(0), new GroupedPaymentWritable(key.get(), total, stores));
+      context.write(NullWritable.get(), new GroupedPaymentWritable(key.get(), total, stores));
     }
   }
 }

@@ -20,14 +20,14 @@ import java.util.TreeSet;
 
 import payments.json.GroupedPayment;
 
-public class SimplePaymentsJobConf {
+public class SimplePaymentsMR {
   private final static String NAME = "SimplePaymentsJob";
   private Job job;
 
-  public SimplePaymentsJobConf(Configuration conf) {
+  public SimplePaymentsMR(Configuration conf) {
     try {
       job = Job.getInstance(conf, NAME);
-      job.setJarByClass(SimplePaymentsJobConf.class);
+      job.setJarByClass(SimplePaymentsMR.class);
 
       job.setMapperClass(PaymentsMapper.class);
       job.setReducerClass(PaymentsReducer.class);
