@@ -36,8 +36,7 @@ public class CsvPaymentsJobApp extends Configured implements Tool {
     TextOutputFormat.setOutputPath(job, new Path("/output"));
 
 
-    //todo - return 0 if successful, not 1
-    return job.waitForCompletion(true) ? 1 : 0;
+    return job.waitForCompletion(true) ? 0 : 1;
   }
 
   public Configuration getConf() {

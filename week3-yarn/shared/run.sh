@@ -10,7 +10,7 @@ hdfs dfs -put input.dat /input.dat
 echo "Running yarn jar week3-hdfs.jar $@"
 yarn jar week3-yarn.jar "$@"
 
-if [ $? -eq 1 ]
+if [ $? -eq 0 ]
 then
   echo "Payments Input:"
   hdfs dfs -text /input.dat

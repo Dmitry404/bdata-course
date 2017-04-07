@@ -12,7 +12,7 @@ public class JsonPaymentsJobApp {
     FileInputFormat.addInputPath(jobConf.getJob(), new Path("/input.dat"));
     FileOutputFormat.setOutputPath(jobConf.getJob(), new Path("/output"));
 
-    int exitCode = jobConf.getJob().waitForCompletion(true) ? 1 : 0;
+    int exitCode = jobConf.getJob().waitForCompletion(true) ? 0 : 1;
     System.exit(exitCode);
   }
 }
