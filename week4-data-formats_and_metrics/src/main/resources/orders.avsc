@@ -1,0 +1,42 @@
+{
+  "namespace": "avro.data",
+  "type": "record",
+  "name": "Orders",
+  "doc": "Orders list",
+  "fields": [
+    {
+      "name": "comments",
+      "type": "string"
+    },
+    {
+      "name": "data",
+      "type":
+      {
+        "type": "array",
+        "items":
+        {
+          "type": "record",
+          "name": "Order",
+          "fields": [
+            {
+              "name": "id",
+              "type": "int"
+            },
+            {
+              "name": "total",
+              "type": "double"
+            },
+            {
+              "name": "goods",
+              "type":
+              {
+                "type": "map",
+                "values": "double"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
