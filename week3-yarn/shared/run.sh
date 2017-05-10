@@ -12,8 +12,8 @@ yarn jar week3-yarn.jar "$@"
 
 if [ $? -eq 0 ]
 then
-  echo "Payments Input (truncated to the first 20 lines if the total size is more than that):"
-  hdfs dfs -text /input.dat | head -n 20
+  echo "Payments Input (truncated if the total number of lines is big):"
+  hdfs dfs -text /input.dat | head -n 30
 
   echo ""
   echo "Payments Output:"
