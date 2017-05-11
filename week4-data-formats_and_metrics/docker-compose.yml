@@ -1,0 +1,25 @@
+version: "3"
+services:
+  hdfs-master:
+    build:
+      context: ../docker/hdfs-tarball
+    container_name: hdfs-master-node
+    command: "--run-as-master-with-slaves hdfs-slave-node hdfs-slave-node-2"
+    ports:
+      - "50070:50070"
+      - "9009:9009"
+  hdfs-slave:
+    build:
+      context: ../docker/hdfs-tarball
+    container_name: hdfs-slave-node
+    command: "--run-as-slave-with-master hdfs-master-node"
+  hdfs-slave-2:
+    build:
+      context: ../docker/hdfs-tarball
+    container_name: hdfs-slave-node-2
+    command: "--run-as-slave-with-master hdfs-master-node"
+  hdfs-java-app:
+    build:
+      context: .
+    container_name: java-app-node
+    command: "--load_data_to hdfs-master-node"

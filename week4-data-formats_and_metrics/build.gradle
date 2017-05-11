@@ -6,8 +6,22 @@ repositories {
 
 dependencies {
   compile 'org.slf4j:slf4j-api:1.7.21'
-  compile 'org.apache.avro:avro:1.8.0'
+  compile 'org.apache.hadoop:hadoop-common:2.7.3'
+  compile 'org.apache.hadoop:hadoop-hdfs:2.7.3'
+  compile 'org.apache.avro:avro:1.8.1'
+  compile 'org.apache.parquet:parquet-avro:1.8.1'
 
   testCompile 'junit:junit:4.12'
+}
 
+jar {
+  manifest {
+    attributes("Main-Class": "EntryPoint")
+  }
+
+  from {
+    (configurations.runtime).collect {
+      it.isDirectory() ? it : zipTree(it)
+    }
+  }
 }
