@@ -18,6 +18,7 @@ public class ParquetDataWriter extends DataWriterReader {
     try {
       ParquetWriter<Orders> writer = AvroParquetWriter.<Orders>builder(path)
           .withSchema(Orders.getClassSchema())
+          .withConf(configuration)
           .build();
 
       for (Orders ordersItem : ordersList) {

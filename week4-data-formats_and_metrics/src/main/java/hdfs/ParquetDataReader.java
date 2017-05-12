@@ -17,7 +17,9 @@ public class ParquetDataReader extends DataWriterReader {
 
   public List<Orders> read() {
     try {
-      ParquetReader<Orders> reader = AvroParquetReader.<Orders>builder(path).build();
+      ParquetReader<Orders> reader = AvroParquetReader.<Orders>builder(path)
+          .withConf(configuration)
+          .build();
 
       List<Orders> results = new ArrayList<>();
       Orders o;

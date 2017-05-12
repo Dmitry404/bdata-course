@@ -52,11 +52,11 @@ public class EntryPoint {
   }
 
   private static boolean readAsAvro(String[] args) {
-    return args.length >= 2 && args[0].equals("--read_avro");
+    return args.length >= 3 && args[2].equals("--read_avro");
   }
 
   private static boolean readAsParquet(String[] args) {
-    return args.length >= 2 && args[0].equals("--read_parquet");
+    return args.length >= 3 && args[2].equals("--read_parquet");
   }
 
   private static List<Orders> generateData() {
