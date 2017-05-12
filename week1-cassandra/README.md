@@ -17,5 +17,5 @@ will upload some data collected from Twitter to Cassandra. Additionally a web-ap
 
 Here is a screenshot of how the web-app looks like
 
-[web-app](https://cloud.githubusercontent.com/assets/188851/25997783/691b68fe-3726-11e7-9802-15780fe34eaf.png)
+![web-app](https://cloud.githubusercontent.com/assets/188851/25997783/691b68fe-3726-11e7-9802-15780fe34eaf.png)
 
