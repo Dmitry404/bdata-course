@@ -23,3 +23,8 @@ services:
       context: .
     container_name: java-app-node
     command: "--load_data_to hdfs-master-node"
+  graphite-server:
+    image: nickstenning/graphite
+    container_name: graphite-server-node
+    ports:
+      - "80:80"

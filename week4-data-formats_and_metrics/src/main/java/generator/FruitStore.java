@@ -1,28 +1,78 @@
 package generator;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
+
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 public class FruitStore {
   private final Map<String, Double> fruits;
   private final int maxQtyPerProduct;
   private final int maxProductsInOrder;
 
+  private Histogram orderTotalsHistogram;
+  private Map<String, Histogram> fruitHistograms;
+
   public FruitStore(Map<String, Double> fruits, int maxQtyPerProduct, int maxProductsInOrder) {
     this.fruits = fruits;
     this.maxQtyPerProduct = maxQtyPerProduct;
     this.maxProductsInOrder = maxProductsInOrder;
+
+    initMetrics();
+  }
+
+  private void initMetrics() {
+    MetricRegistry metricsRegistry;
+    metricsRegistry = new MetricRegistry();
+
+    GraphiteReporter graphiteReporter;
+    graphiteReporter =  GraphiteReporter.forRegistry(metricsRegistry)
+        .prefixedWith("java.java-app-node")
+        .convertRatesTo(TimeUnit.SECONDS)
+        .convertDurationsTo(TimeUnit.MILLISECONDS)
+        .filter(MetricFilter.ALL)
+        .build(new Graphite(new InetSocketAddress("graphite-server-node", 2003)));
+
+    ConsoleReporter consoleReporter = ConsoleReporter.forRegistry(metricsRegistry)
+        .convertRatesTo(TimeUnit.SECONDS)
+        .convertDurationsTo(TimeUnit.MILLISECONDS)
+        .build();
+
+    orderTotalsHistogram = metricsRegistry.histogram(name(Order.class, "orders-totals"));
+    fruitHistograms = new HashMap<>();
+    for (Map.Entry<String, Double> entry : fruits.entrySet()) {
+      Histogram h = metricsRegistry.histogram(name(Fruit.class, entry.getKey(), "counts"));
+      fruitHistograms.put(entry.getKey(), h);
+    }
+
+    graphiteReporter.start(1, TimeUnit.MINUTES);
+    //consoleReporter.start(1, TimeUnit.SECONDS);
   }
 
   public List<Order> generateOrders(int numberOfOrders) {
     return IntStream.rangeClosed(1, numberOfOrders)
         .mapToObj(id -> new Order(id, pickFruits()))
+        .peek(this::reportOrdersTotals)
         .collect(Collectors.toList());
+  }
+
+  private void reportOrdersTotals(Order order) {
+    orderTotalsHistogram.update(Math.round(order.getTotal()));
   }
 
   private List<Fruit> pickFruits() {
@@ -31,7 +81,12 @@ public class FruitStore {
 
     return fruitNames.subList(0, getProductsNumberInOrder(fruitNames)).stream()
         .map(this::createFruitSet)
+        .peek(this::reportFruitsQty)
         .collect(Collectors.toList());
+  }
+
+  private void reportFruitsQty(Fruit fruit) {
+    fruitHistograms.get(fruit.getName()).update(fruit.getQty());
   }
 
   private int getProductsNumberInOrder(List<String> fruitNames) {

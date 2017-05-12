@@ -1,5 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
 
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,6 @@ public class EntryPoint {
 
     return configuration;
   }
-
-  // add metrics to read/write methods - e.g. size of an order
-  // metrics for fruits when generation?
 
   private static boolean isDataGenerationRequested(String[] args) {
     return args.length >= 2 && args[0].equals("--load_data_to");
