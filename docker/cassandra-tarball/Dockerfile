@@ -3,7 +3,7 @@
 FROM dmitry404/openjdk-8
 LABEL maintainer dmitry404@gmail.com
 
-RUN wget http://mirrors.ae-online.de/apache/cassandra/3.9/apache-cassandra-3.9-bin.tar.gz \
+RUN wget http://mirror.yannic-bonenberger.com/apache/cassandra/3.9/apache-cassandra-3.9-bin.tar.gz \
 	&& tar xzf apache-cassandra-3.9-bin.tar.gz \
 	&& rm -f apache-cassandra-3.9-bin.tar.gz \
 	&& cp -r apache-cassandra-3.9 /usr/lib/cassandra \
