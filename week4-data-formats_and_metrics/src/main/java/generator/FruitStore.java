@@ -42,16 +42,11 @@ public class FruitStore {
 
     GraphiteReporter graphiteReporter;
     graphiteReporter =  GraphiteReporter.forRegistry(metricsRegistry)
-        .prefixedWith("java.java-app-node")
+        .prefixedWith("java-app-node")
         .convertRatesTo(TimeUnit.SECONDS)
         .convertDurationsTo(TimeUnit.MILLISECONDS)
         .filter(MetricFilter.ALL)
         .build(new Graphite(new InetSocketAddress("graphite-server-node", 2003)));
-
-    ConsoleReporter consoleReporter = ConsoleReporter.forRegistry(metricsRegistry)
-        .convertRatesTo(TimeUnit.SECONDS)
-        .convertDurationsTo(TimeUnit.MILLISECONDS)
-        .build();
 
     orderTotalsHistogram = metricsRegistry.histogram(name(Order.class, "orders-totals"));
     fruitHistograms = new HashMap<>();
@@ -60,8 +55,7 @@ public class FruitStore {
       fruitHistograms.put(entry.getKey(), h);
     }
 
-    graphiteReporter.start(1, TimeUnit.MINUTES);
-    //consoleReporter.start(1, TimeUnit.SECONDS);
+    graphiteReporter.start(1, TimeUnit.SECONDS);
   }
 
   public List<Order> generateOrders(int numberOfOrders) {
