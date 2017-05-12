@@ -13,7 +13,7 @@ $ docker-compose up
 It will create a HDFS cluster of three containers (master and two slaves). After the cluster starts, an additional container with a Java app 
 will generate some amount of orders applicable to a fruit store. Each order will be converted to Avro format and written to HDFS. In addition, there is a Parquet converter which uses Avro schemas in order to write the same Fruit Store data to HDFS.
 
-< Data generation will take some time because I put `sleep's` there to make Grafana graphs more readable
+> Data generation will take some time because I put `sleep's` there to make Grafana graphs more readable
 
 ##### Graphite / codahale.metrics
 Some metrics, like order totals and amount of fruits sold, grouped by its name, are reported to Graphite server which you can access at `http://localhost`
@@ -37,3 +37,7 @@ As the result you'll get the generated Fruit Store orders data in JSON format. N
 Grafana server is also will be run, however it will require additional setup as I used the official Docker container `grafana/grafana`
 
 Its UI is available at `http://localhost:3000`
+
+An example of one of the run with manually configured Grafana
+
+https://cloud.githubusercontent.com/assets/188851/25996549/90e2b2e4-3720-11e7-83f7-16caee8557e2.png
