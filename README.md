@@ -7,5 +7,6 @@ BigData course materials
 - Exercises code
   - [HDFS](week2-hdfs/README.md)
   - [YARN](week3-yarn/README.md)
+  - [Avro & Parquet / Graphite & Codahale.metrics](week4-data-formats_and_metrics/README.md)
 - Observations
   - [Cassandra](observations/1-cassandra.md)
