@@ -13,6 +13,7 @@ $ docker-compose up
 It will create a HDFS cluster of three containers (master and two slaves). After the cluster starts, an additional container with a Java app 
 will generate some amount of orders applicable to a fruit store. Each order will be converted to Avro format and written to HDFS. In addition, there is a Parquet converter which uses Avro schemas in order to write the same Fruit Store data to HDFS.
 
+#### Graphite / codahale.metrics
 Some metrics, like order totals and amount of fruits sold, grouped by its name, are reported to Graphite server which you can access at `http://localhost`
 
 ##### You can list the written data running 
