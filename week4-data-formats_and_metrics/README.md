@@ -38,7 +38,8 @@ Grafana server is also will be run, however it will require additional setup as 
 
 Its UI is available at `http://localhost:3000`
 
+---
 
 An example of one of the runs with manually configured Grafana
 
-![this in an example](https://cloud.githubusercontent.com/assets/188851/25996549/90e2b2e4-3720-11e7-83f7-16caee8557e2.png "Logo Title Text 1")
+![this in an example](https://cloud.githubusercontent.com/assets/188851/25996549/90e2b2e4-3720-11e7-83f7-16caee8557e2.png)
