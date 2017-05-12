@@ -18,8 +18,6 @@ public class EntryPoint {
   private static final String FRUIT_STORES_DATA_FILE_AVRO = "fruit_stores.avro";
   private static final String FRUIT_STORES_DATA_FILE_PARQUET = "fruit_stores.parquet";
 
-  private static final int GENERATE_ITERATIONS_NUMBER = 5;
-
   public static void main(String[] args) {
     if (isDataGenerationRequested(args)) {
       List<Orders> ordersList = generateData();
