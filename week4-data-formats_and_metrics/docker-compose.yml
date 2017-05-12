@@ -28,3 +28,8 @@ services:
     container_name: graphite-server-node
     ports:
       - "80:80"
+  graphana-server:
+    image: grafana/grafana
+    container_name: graphana-server-node
+    ports:
+      - "3000:3000"
