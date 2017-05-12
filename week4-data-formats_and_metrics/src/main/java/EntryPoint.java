@@ -1,10 +1,10 @@
 import org.apache.hadoop.conf.Configuration;
 
-import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import avro.Converter;
 import avro.data.Orders;
@@ -17,6 +17,8 @@ import hdfs.ParquetDataWriter;
 public class EntryPoint {
   private static final String FRUIT_STORES_DATA_FILE_AVRO = "fruit_stores.avro";
   private static final String FRUIT_STORES_DATA_FILE_PARQUET = "fruit_stores.parquet";
+
+  private static final int GENERATE_ITERATIONS_NUMBER = 5;
 
   public static void main(String[] args) {
     if (isDataGenerationRequested(args)) {
@@ -67,12 +69,24 @@ public class EntryPoint {
     FruitStore fruitStore5 = new FruitStore(fruits, 10000, fruits.size());
 
     Orders orders = new Orders("Kennebec Fruit Company S", Converter.toAvroOrders(fruitStore.generateOrders(5)));
+    takeASleepPill();
     Orders orders2 = new Orders("Kennebec Fruit Company M", Converter.toAvroOrders(fruitStore2.generateOrders(10)));
+    takeASleepPill();
     Orders orders3 = new Orders("Kennebec Fruit Company L", Converter.toAvroOrders(fruitStore3.generateOrders(100)));
+    takeASleepPill();
     Orders orders4 = new Orders("Kennebec Fruit Company XL", Converter.toAvroOrders(fruitStore4.generateOrders(1000)));
+    takeASleepPill();
     Orders orders5 = new Orders("Kennebec Fruit Company XXL", Converter.toAvroOrders(fruitStore5.generateOrders(10000)));
 
     return Arrays.asList(orders, orders2, orders3, orders4, orders5);
+  }
+
+  private static void takeASleepPill() {
+    try {
+      Thread.sleep(15_000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   private static Map<String, Double> getFruitsMap() {
