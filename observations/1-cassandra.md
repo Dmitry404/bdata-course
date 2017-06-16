@@ -12,7 +12,7 @@ Each column contains at least:
   - Value
   - Timestamp (value insert timestamp, writteime)
   - TTL (timeout of data removal)
-  - Timestomb (for data removal)
+  - Tombstone (for data removal)
 
 ----
 **What was tested**
